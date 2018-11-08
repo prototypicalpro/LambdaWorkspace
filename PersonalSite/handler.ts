@@ -22,6 +22,7 @@ const OTHER_REPOS: Array<{alias: string, name: string, owner: string}> = [{alias
 
 /** My github user ID (not display name), found by manually querying the github API */
 const USER_ID = "MDQ6VXNlcjg3MzEwMTM=";
+
 /** My github user name */
 const USER_NAME = "db-dropDatabase";
 
@@ -52,6 +53,7 @@ const QUERY = `{
   }
   ${OTHER_REPOS.map((p) => `
     ${p.alias}: repository(owner:"${p.owner}" name:"${p.name}") {
+      name
       defaultBranchRef {
         target {
           ... on Commit {
@@ -63,6 +65,43 @@ const QUERY = `{
       }
     }`).join("\n")}
 }`;
+
+/** simple interface to make nesting in {@link IGithubQueryResult} a little better */
+export interface IQueryRepository {
+  /** name of the repository */
+  name: string;
+  defaultBranchRef: {
+    target: {
+      history: {
+        /** the number of commits by me in this repository */
+        totalCount: number,
+      },
+    },
+  };
+}
+
+/** sub-type definition used in {@link IGithubQueryResponse} */
+interface IGithubQueryUser {
+  /** all the repositories I own */
+  user: {
+    repositories: {
+      nodes: IQueryRepository[],
+    },
+  };
+}
+
+/** sub-type definition used in {@link IGithubQueryResponse} */
+interface IGithubQueryRepos {
+  /** all the repositories specified in {@link OTHER_REPOS} */
+  [alias: string]: IQueryRepository;
+}
+
+/**
+ * And just for the typescript cleanliness, I've even made an interface descrbing all the
+ * data outputted from the query! It's heavily nested and ugly, which is basically why this API exists (that is, to fix it).
+ * Note: Please update this when the query is changed.
+ */
+export type IGithubQueryResponse = IGithubQueryUser & IGithubQueryRepos;
 
 /** Github graphql API endpoint */
 const GITHUB = "https://api.github.com/graphql";
@@ -88,6 +127,8 @@ export interface IGithubRet {
     /** whether or not I own this repository */
     ownedByMe: boolean,
   }>;
+  /** total commits just for fun */
+  totalCommitsByMe: number;
 }
 
 /**
@@ -96,24 +137,38 @@ export interface IGithubRet {
  * @returns {@link IGithubRet}
  */
 export const githubcount: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
-  const data: any = await gqlClient.request(QUERY);
-  let totalCommits = 0;
+  // query the GraphQL API, and fetch the raw data
+  const data: IGithubQueryResponse = await gqlClient.request(QUERY) as IGithubQueryResponse;
+  // since the data is heavily nested, it is kinda complicated to check every key and see if it exists
+  // so instead we wrap the whole shebang in a try/catch and throw a single error for any failure
+  const ret: IGithubRet = { repositories: [], totalCommitsByMe: 0 };
   try {
-    const nodes: [any] = data.user.repositories.nodes;
-    for (let i = 0, len = nodes.length; i < len; i++) totalCommits += nodes[i].defaultBranchRef.target.history.totalCount;
-    for (let i = 0, len = OTHER_REPOS.length; i < len; i++) totalCommits += data[OTHER_REPOS[i].alias].defaultBranchRef.target.history.totalCount;
+    // get the array of repositories from both the user section of the query and the specified section of the query
+    const nodes = data.user.repositories.nodes.concat(OTHER_REPOS.map((o) => data[o.alias]));
+    const ownedByMeLen = data.user.repositories.nodes.length;
+    for (let i = 0, len = nodes.length; i < len; i++) {
+      // if the # of commits is above zero (aparently I have some repositories I've never contributed to?)
+      if (nodes[i].defaultBranchRef.target.history.totalCount > 0) {
+        // populate the better json output
+        ret.totalCommitsByMe += nodes[i].defaultBranchRef.target.history.totalCount;
+        ret.repositories.push({
+          commitsByMe: nodes[i].defaultBranchRef.target.history.totalCount,
+          name: nodes[i].name,
+          // if i >= the length of the first array, then we're on to the second array and it isn't owned by me
+          ownedByMe: i < ownedByMeLen,
+        });
+      }
+    }
+    // fire away!
+    return {
+      body: JSON.stringify(ret),
+      statusCode: 200,
+    };
   } catch (e) {
+    // nothing good, guess we'll spit out an error
     cb(e, {
-      body: e.toString(),
+      body: "Guess stuff is messed up, come back later!",
       statusCode: 500,
     });
-    return;
   }
-  const response = {
-    body: totalCommits.toString(),
-    statusCode: 200,
-  };
-
-  cb(null, response);
-  return true;
 };
