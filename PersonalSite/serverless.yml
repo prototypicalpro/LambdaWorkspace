@@ -5,6 +5,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-dotenv-plugin
+  - serverless-domain-manager
   - serverless-offline
 
 provider:
@@ -33,6 +34,12 @@ custom:
   webpackIncludeModules:
     forceExclude:
       - aws-sdk
+  # custom domain endpoint!
+  customDomain:
+    domainName: api.prototypical.pro
+    certificateName: '*.prototypical.pro'
+    createRoute53Record: true
+    endpointType: 'regional'
 
 functions:
   getGithubCount:
