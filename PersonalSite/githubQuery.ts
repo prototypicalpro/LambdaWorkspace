@@ -1,14 +1,3 @@
-/**
- * Handler for a simple function which counts the # of commits in repositories I own or
- * have contributed to.
- *
- * Works with the Github GraphQL API to fetch data in one go, processes it, and then sends it
- * off to the user for display purposes.
- *
- * Note: requires a github oauth token in process.env.github_token to use graphQL.
- */
-
-import { APIGatewayEvent, Callback, Context, Handler } from "aws-lambda";
 import { GraphQLClient } from "graphql-request";
 
 /**
@@ -67,7 +56,7 @@ const QUERY = `{
 }`;
 
 /** simple interface to make nesting in {@link IGithubQueryResult} a little better */
-export interface IQueryRepository {
+interface IQueryRepository {
   /** name of the repository */
   name: string;
   defaultBranchRef: {
@@ -101,7 +90,7 @@ interface IGithubQueryRepos {
  * data outputted from the query! It's heavily nested and ugly, which is basically why this API exists (that is, to fix it).
  * Note: Please update this when the query is changed.
  */
-export type IGithubQueryResponse = IGithubQueryUser & IGithubQueryRepos;
+type IGithubQueryResponse = IGithubQueryUser & IGithubQueryRepos;
 
 /** Github graphql API endpoint */
 const GITHUB = "https://api.github.com/graphql";
@@ -109,6 +98,7 @@ const GITHUB = "https://api.github.com/graphql";
 /**
  * I chose to use a GraphQL library, and this is the client for it.
  * Stores the token in the authorization header as well as setting the endpoint.
+ * Note: requires a github oauth token in process.env.github_token to use graphQL.
  */
 const gqlClient = new GraphQLClient(GITHUB, {
   headers: {
@@ -136,7 +126,7 @@ export interface IGithubRet {
  * Takes no parameters, returns data useful for quantifying my gighub contributions
  * @returns {@link IGithubRet}
  */
-export const githubcount: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
+export async function queryGithubAPI(): Promise<IGithubRet | false> {
   // query the GraphQL API, and fetch the raw data
   const data: IGithubQueryResponse = await gqlClient.request(QUERY) as IGithubQueryResponse;
   // since the data is heavily nested, it is kinda complicated to check every key and see if it exists
@@ -160,15 +150,10 @@ export const githubcount: Handler = async (event: APIGatewayEvent, context: Cont
       }
     }
     // fire away!
-    return {
-      body: JSON.stringify(ret),
-      statusCode: 200,
-    };
+    return ret;
   } catch (e) {
     // nothing good, guess we'll spit out an error
-    cb(e, {
-      body: "Guess stuff is messed up, come back later!",
-      statusCode: 500,
-    });
+    console.log(`Error! ${e.toString()}`);
+    return false;
   }
-};
+}

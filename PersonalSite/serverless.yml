@@ -42,11 +42,16 @@ custom:
     endpointType: 'regional'
 
 functions:
+  # the exposed API part
   getGithubCount:
-    handler: handler.githubcount
+    handler: githubcount.githubcount
     events:
       - http:
           method: get
           path: githubcount
           # conditionally validate API key based on stage (see custom)
           private: ${self:custom.private.${opt:stage, self:provider.stage}}
+  # the un-exposed IoT updating part
+  #pokeGithubCount:
+  #  handler: handler.githubpoke
+  #  events:  
