@@ -8,12 +8,36 @@ plugins:
   - serverless-domain-manager
   - serverless-offline
 
+# lets make a bucket!
+resources:
+  Resources:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:provider.environment.bucketName}
+
 provider:
   name: aws
   runtime: nodejs8.10
   region: us-west-2
   memorySize: 128
   timeout: 3
+  # give permissions to these functions to read/write my s3 bucket, defined in resources
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+        - "s3:PutObject"
+      Resource: 
+        Fn::Join:
+           - ""
+           - - Fn::GetAtt:
+                - ${self:provider.environment.bucketName}
+                - "Arn"
+             - /${self:provider.environment.fileName}
+  # and while we're at it, lets tell the function what the bucket name is
+  environment:
+    bucketName: githubjsonbucket
+    fileName: apicache.json
   # API key based rate limiting
   # single API key and single rate limit
   # if you're reading this, please don't spam my API :(
@@ -44,6 +68,7 @@ custom:
 functions:
   # the exposed API part
   getGithubCount:
+    enabled: false
     handler: githubcount.githubcount
     events:
       - http:
