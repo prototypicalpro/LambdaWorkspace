@@ -72,3 +72,7 @@ functions:
   pokeGithubCount:
     role: GithubPokeRole
     handler: githubpoke.githubpoke  
+    events:
+      - schedule: 
+          rate: rate(1 minute)
+          enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}
