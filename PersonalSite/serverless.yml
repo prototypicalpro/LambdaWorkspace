@@ -11,9 +11,10 @@ plugins:
 # lets make a bucket!
 resources:
   Resources:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: ${self:provider.environment.bucketName}
+    StorageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.bucketName}
 
 provider:
   name: aws
@@ -23,17 +24,7 @@ provider:
   timeout: 3
   # give permissions to these functions to read/write my s3 bucket, defined in resources
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:GetObject"
-        - "s3:PutObject"
-      Resource: 
-        Fn::Join:
-           - ""
-           - - Fn::GetAtt:
-                - ${self:provider.environment.bucketName}
-                - "Arn"
-             - /${self:provider.environment.fileName}
+    
   # and while we're at it, lets tell the function what the bucket name is
   environment:
     bucketName: githubjsonbucket
@@ -43,15 +34,15 @@ provider:
   # if you're reading this, please don't spam my API :(
   apiKeys:
     # this will be in the source of my website anyway, so there's no point in obfuscating it
-    - superSecurePlaintextAPIKey
+    - superSecurePlaintextAPIKey-${opt:stage, self:provider.stage}
   usagePlan:
     throttle:
       burstLimit: 20 # I'm not that famous, right?
       rateLimit: 30 # Thirty per second is worrying, but it probably won't bankrupt me
 
 custom:
-  # conditionally validate API key based on stage
-  private:
+  # conditionally enable features based on stage
+  isProd:
     dev: false
     prod: true
   # exclude the aws-sdk to reduce bundle size
@@ -60,6 +51,8 @@ custom:
       - aws-sdk
   # custom domain endpoint!
   customDomain:
+    # only use the custom domain if we are deploying to production
+    enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}
     domainName: api.prototypical.pro
     certificateName: '*.prototypical.pro'
     createRoute53Record: true
@@ -68,15 +61,13 @@ custom:
 functions:
   # the exposed API part
   getGithubCount:
-    enabled: false
     handler: githubcount.githubcount
     events:
       - http:
           method: get
           path: githubcount
           # conditionally validate API key based on stage (see custom)
-          private: ${self:custom.private.${opt:stage, self:provider.stage}}
+          private: ${self:custom.isProd.${opt:stage, self:provider.stage}}
   # the un-exposed IoT updating part
-  #pokeGithubCount:
-  #  handler: handler.githubpoke
-  #  events:  
+  pokeGithubCount:
+    handler: githubpoke.githubpoke  
