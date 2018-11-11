@@ -2,10 +2,10 @@
 GithubCount:
   Type: AWS::IAM::Role
   Properties:
-    Path: /PersonalSite/GithubCount
+    Path: /PersonalSite/GithubCount/
     RoleName: GithubCount # required if you want to use 'serverless deploy --function' later on
     AssumeRolePolicyDocument:
-      Version: '2017'
+      Version: '2012-10-17'
       Statement:
         - Effect: Allow
           Principal:
@@ -15,7 +15,7 @@ GithubCount:
     Policies:
       - PolicyName: S3Read
         PolicyDocument:
-          Version: '2017'
+          Version: '2012-10-17'
           Statement:
             - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
               Action:
@@ -30,32 +30,32 @@ GithubCount:
                     - Ref: 'AWS::Region'
                     - Ref: 'AWS::AccountId'
                     - 'log-group:/aws/lambda/*:*:*'
-            -  Effect: "Allow"
-                Action:
-                  - "s3:PutObject"
-                Resource:
-                  Fn::Join:
-                    - ""
-                    - - "arn:aws:s3:::"
-                      - "Ref" : "ServerlessDeploymentBucket"
+            - Effect: Allow
+              Action:
+                - "s3:PutObject"
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - "Ref" : "ServerlessDeploymentBucket"
             - Effect: "Allow"
-                Action:
-                  - "s3:GetObject"
-                Resource: 
-                  Fn::Join:
-                    - ""
-                    - - Fn::GetAtt:
-                          - StorageBucket
-                          - Arn
-                      - /${self:provider.environment.fileName}
+              Action:
+                - "s3:GetObject"
+              Resource: 
+                Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - StorageBucket
+                        - Arn
+                    - /${self:provider.environment.fileName}
 # define the githubpoke role with read/write to the s3 bucket, as well as write to the IoT topic
 GithubPoke:
   Type: AWS::IAM::Role
   Properties:
-    Path: /PersonalSite/GithubPoke
+    Path: /PersonalSite/GithubPoke/
     RoleName: GithubPoke # required if you want to use 'serverless deploy --function' later on
     AssumeRolePolicyDocument:
-      Version: '2017'
+      Version: '2012-10-17'
       Statement:
         - Effect: Allow
           Principal:
@@ -65,7 +65,7 @@ GithubPoke:
     Policies:
       - PolicyName: S3ReadWriteIoTRead
         PolicyDocument:
-          Version: '2017'
+          Version: '2012-10-17'
           Statement:
             - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
               Action:
@@ -80,23 +80,29 @@ GithubPoke:
                     - Ref: 'AWS::Region'
                     - Ref: 'AWS::AccountId'
                     - 'log-group:/aws/lambda/*:*:*'
-            -  Effect: "Allow"
-                Action:
-                  - "s3:PutObject"
-                Resource:
-                  Fn::Join:
-                    - ""
-                    - - "arn:aws:s3:::"
-                      - "Ref" : "ServerlessDeploymentBucket"
             - Effect: "Allow"
-                Action:
-                  - "s3:GetObject"
-                  - "s3:PutObject"
-                Resource: 
-                  Fn::Join:
-                    - ""
-                    - - Fn::GetAtt:
-                          - StorageBucket
-                          - Arn
-                      - /${self:provider.environment.fileName}
-            
+              Action:
+                - "s3:PutObject"
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - "Ref" : "ServerlessDeploymentBucket"
+            # s3 read/write on the api cache file
+            - Effect: "Allow"
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+              Resource: 
+                Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - StorageBucket
+                        - Arn
+                    - /${self:provider.environment.fileName}
+            # IoT write to my specific topic
+            - Effect: "Allow"
+              Action:
+                - "iot:Connect"
+                - "iot:Publish"
+              Resource: "arn:aws:iot:us-west-2:891150181192:topic/$aws/things/ESPGithubMoniter/shadow/update"

@@ -8,17 +8,17 @@
  * Note: requires a github oauth token in process.env.github_token to use graphQL.
  */
 
-import { APIGatewayEvent, Callback, Context, Handler } from "aws-lambda";
-import { queryGithubAPI } from "./githubQuery";
+import { Handler } from "aws-lambda";
+import { getAPICache } from "./apicache";
 
 /**
  * The main function handler for this API.
  * Takes no parameters, returns data useful for quantifying my github contributions
  * @returns {@link IGithubRet}
  */
-export const githubcount: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
+export const githubcount: Handler = async () => {
   // query the GraphQL API, and fetch the raw data
-  const data = await queryGithubAPI();
+  const data = await getAPICache();
   if (!data) return {
       body: "stuff is broken, please come back later!",
       statusCode: 500,

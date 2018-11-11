@@ -15,6 +15,9 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.bucketName}
+    # pull roles from the external file
+    GithubCountRole: ${file(roles.yml):GithubCount}
+    GithubPokeRole: ${file(roles.yml):GithubPoke}
 
 provider:
   name: aws
@@ -22,14 +25,10 @@ provider:
   region: us-west-2
   memorySize: 128
   timeout: 3
-  # give permissions to these functions to read/write my s3 bucket, defined in resources
-  iamRoleStatements:
-    
   # and while we're at it, lets tell the function what the bucket name is
   environment:
     bucketName: githubjsonbucket
     fileName: apicache.json
-  # API key based rate limiting
   # single API key and single rate limit
   # if you're reading this, please don't spam my API :(
   apiKeys:
@@ -62,6 +61,7 @@ functions:
   # the exposed API part
   getGithubCount:
     handler: githubcount.githubcount
+    role: GithubCountRole
     events:
       - http:
           method: get
@@ -70,4 +70,5 @@ functions:
           private: ${self:custom.isProd.${opt:stage, self:provider.stage}}
   # the un-exposed IoT updating part
   pokeGithubCount:
+    role: GithubPokeRole
     handler: githubpoke.githubpoke  
