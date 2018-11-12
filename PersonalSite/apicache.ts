@@ -1,5 +1,5 @@
 /**
- * Store and retrieve a JSON file in S3 as a cache
+ * Store and retrieve a JSON file in S3 as a cache.
  */
 
 import * as AWS from "aws-sdk";
