@@ -1,5 +1,5 @@
 /**
- * Store and retrieve a JSON file in S3 as a cache.
+ * Store and retrieve a JSON file in S3 as a cache, but using less properties so the code is cleaner.
  */
 
 import * as AWS from "aws-sdk";
