@@ -153,7 +153,7 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
     return ret;
   } catch (e) {
     // nothing good, guess we'll spit out an error
-    console.log(`Error! ${e.toString()}`);
+    console.error(`Error! ${e.toString()}`);
     return false;
   }
 }
