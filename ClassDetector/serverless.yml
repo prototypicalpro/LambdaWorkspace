@@ -1,0 +1,69 @@
+service:
+  name: ClassDetector
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+# create a custom cloudwatch event to call the function periodically
+# then remember the name so the function can turn itself off
+resources:
+  Resources:
+    # create cloudwatch event
+    TriggerClassEvent:
+      Type: AWS::Events::Rule
+      Properties:
+        Name: ${self:custom.eventName}
+        ScheduleExpression: rate(1 minute)
+        State: DISABLED
+        Targets:
+          - Arn:
+              Fn::GetAtt:
+                - PokeClassDetectLambdaFunction
+                - Arn
+            Id: ${self:custom.eventName}-id
+    # give the cloudwatch event permission to invoke my function
+    TriggerClassEventPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          Fn::GetAtt:
+            - PokeClassDetectLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal:
+          Fn::Join:
+            - ""
+            - - "events."
+              - Ref: AWS::URLSuffix
+        SourceArn:
+          Fn::GetAtt:
+            - TriggerClassEvent
+            - Arn
+    # import role!
+    PokeClassDetectRole: ${file(roles.yml):PokeClassDetect}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-west-2
+  memorySize: 128
+  timeout: 3
+
+custom:
+  # have a consistent naming scheme for the cloudwatch event
+  eventName: TriggerClassEvent-${opt:stage, self:provider.stage}
+  # exclude the aws-sdk to reduce bundle size
+  webpackIncludeModules:
+    forceExclude:
+      - aws-sdk
+
+functions:
+  PokeClassDetect:
+    role: PokeClassDetectRole
+    # self modifying enviroment varibles
+    # simple and fast storage
+    environment:
+      number: 0
+      eventName: TriggerClassEvent-${opt:stage, self:provider.stage}
+    handler: handler.pokeClassDetect

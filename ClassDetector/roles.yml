@@ -1,0 +1,65 @@
+# Define the role for our function, allowing it to self-modify it's configuration and disable it's own events
+PokeClassDetect:
+  Type: AWS::IAM::Role
+  Properties:
+    Path: /ClassDetector/PokeClassDetect/
+    RoleName: PokeClassDetectRole # required if you want to use 'serverless deploy --function' later on
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action: sts:AssumeRole
+    Policies:
+      - PolicyName: EnvWriteEventWrite
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - 'Fn::Join':
+                  - ':'
+                  -
+                    - 'arn:aws:logs'
+                    - Ref: 'AWS::Region'
+                    - Ref: 'AWS::AccountId'
+                    - 'log-group:/aws/lambda/*:*:*'
+            - Effect: Allow
+              Action:
+                - "s3:PutObject"
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - "Ref" : "ServerlessDeploymentBucket"
+            # allow self-modification of properties
+            - Effect: "Allow"
+              Action:
+                - lambda:UpdateFunctionConfiguration
+              Resource: 
+                # generate ARN programatically to prevent circular dependency
+                Fn::Join:
+                  - ":"
+                  - - "arn:aws:lambda"
+                    - Ref: AWS::Region
+                    - Ref: AWS::AccountId
+                    - "function:${self:service.name}-${opt:stage, self:provider.stage}-PokeClassDetect"
+            # allow self-modification of trigger
+            - Effect: "Allow"
+              Action:
+                - events:DisableRule
+                - events:EnableRule
+              Resource:
+                # generate ARN programatically to prevent circular dependency
+                Fn::Join:
+                  - ":"
+                  - - "arn:aws:events"
+                    - Ref: AWS::Region
+                    - Ref: AWS::AccountId
+                    - "rule/${self:custom.eventName}"
