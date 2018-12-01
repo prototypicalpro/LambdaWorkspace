@@ -72,7 +72,10 @@ functions:
   pokeGithubCount:
     role: GithubPokeRole
     handler: githubpoke.githubpoke  
+    # function specific secrets
+    environment:
+      github_token: ${file("secrets.yml"):girhub_token}
     events:
       - schedule: 
-          rate: rate(1 minute)
+          rate: rate(5 minutes)
           enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}

@@ -10,3 +10,4 @@ jspm_packages
 
 # secrets
 .env
+secrets.yml
