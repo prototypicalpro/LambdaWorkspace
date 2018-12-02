@@ -15,7 +15,7 @@ resources:
       Properties:
         Name: ${self:custom.eventName}
         ScheduleExpression: rate(1 hour)
-        State: ENABLED
+        State: DISABLED
         Targets:
           - Arn:
               Fn::GetAtt:
@@ -66,6 +66,5 @@ functions:
     environment:
       # fill this in with the encoded CRN data
       classData: "33267,+15038470181"
-      phone: ${file(secrets.yml):my_phone}
       eventName: TriggerClassEvent-${opt:stage, self:provider.stage}
     handler: handler.pokeClassDetect

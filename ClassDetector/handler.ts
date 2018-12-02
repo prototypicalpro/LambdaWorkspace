@@ -9,7 +9,7 @@
 import * as AWS from "aws-sdk";
 import { Context, ScheduledHandler, ScheduledEvent } from "aws-lambda";
 import { FunctionConfiguration } from "aws-sdk/clients/lambda";
-import { readOSUAPI, ClassAvail } from "./ReadOSUAPI";
+import { readOSUAPI, IAPIResponse } from "./ReadOSUAPI";
 
 /** the key in process.env to pay atention to */
 const ENV_KEYS = ["classData", "eventName", "phone"];
@@ -118,17 +118,19 @@ export const pokeClassDetect: ScheduledHandler = async (event: ScheduledEvent, c
   // start trigger if we are triggered by anything else but the scheduled event
   if (event["detail-type"] !== "Scheduled Event") promiseRay.push(enableTrigger());
   // fetch the API, check it, and if there's a spot text the number and delete the CRN element
-  const crnPromise = Promise.all(crnData.map((d) => readOSUAPI(d.crn).then((status: number) => {
+  const crnPromise = Promise.all(crnData.map((d) => readOSUAPI(d.crn).then((response: IAPIResponse) => {
     // if the class is anything but full
-    if (status !== 0) {
+    if (response.enrollment !== response.max_enroll || response.status !== "Open" || response.waitlist_capacity > 0) {
       // remove the crn element from our data
       crnData = crnData.filter((v) => v.crn !== d.crn && v.number !== d.number);
-       // if the class is closed
-      if (status === ClassAvail.CLASS_CLOSED) return sendText(d.number, `Class with CRN ${d.crn} has closed. Sorry about that!`);
+      // start message
+      const messageStart = `Class with code ${response.code} and CRN ${d.crn} `;
+      // if the class is closed
+      if (response.status !== "Open") return sendText(d.number,  messageStart + `has status ${response.status.toLowerCase()}. Sorry about that!`);
       // if the class has a waitlist
-      if (status === ClassAvail.WAITLIST_OPEN) return sendText(d.number, `Class with CRN ${d.crn} has a waitlist size > 0!`);
+      if (response.waitlist_capacity > 0) return sendText(d.number, messageStart + "has a waitlist size > 0!");
       // else the class has spots open
-      return sendText(d.number, `Class with CRN ${d.crn} has ${status} spots open! Go get em!`);
+      return sendText(d.number, messageStart + `has ${response.max_enroll - response.enrollment} spots open! Go get em!`);
     }
     // if the class isn't any of those, nothing to do
   }))).then(() => {

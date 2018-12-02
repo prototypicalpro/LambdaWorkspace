@@ -1,53 +1,94 @@
 /**
  * Handle the OSU API and return the number of avialible spots in the class.
  */
+import * as Https from "https";
 
-import fetch from "node-fetch";
-
-/** the API endpoint to use for the classes */
-const API_ENDPOINT = "https://classes.oregonstate.edu/api/?page=fose&route=details";
-
-export const enum ClassAvail {
-    WAITLIST_OPEN = -1,
-    CLASS_CLOSED = -2,
-}
+/** the request properties to use for the POST request */
+const REQUEST_OPS: Https.RequestOptions = {
+    hostname: "classes.oregonstate.edu",
+    method: "POST",
+    path: "/api/?page=fose&route=details",
+};
 
 /** interface describing roughly what our output from the API is */
 interface IAPIResponseRaw {
     /** the class code */
     code: string;
     /** the crn */
-    crn: string;
+    crn: string | number;
     /** The class status (only know "Open") */
     status: string;
     /** the maximum class size */
-    max_enroll: string;
+    max_enroll: string | number;
     /** current enrollment in the class */
-    enrollment: string;
+    enrollment: string | number;
     /** the capacity of the waitlist */
-    waitlist_capacity: string;
+    waitlist_capacity: string | number;
+}
+
+/** array of strings defining the keys used above */
+const RESP_KEYS = ["code", "crn", "status", "max_enroll", "enrollment", "waitlist_capacity"];
+
+/** the same as {@link IAPIResponseRaw}, but strongly typed for saftey reasons */
+export interface IAPIResponse extends IAPIResponseRaw {
+    crn: string;
+    max_enroll: number;
+    enrollment: number;
+    waitlist_capacity: number;
 }
 
 /**
- * Read the OSU API for a given CRN (class identifier) and return the number of spots open
- * @param crn The class identifier
- * @returns The number of open spots
+ * Searches a JSON string for keys using regex instead of JSON.parse for speedy speed
+ * NOTE: returns the first match and does no validation, so may break for nested or substring parameters
+ * @param keys the string keys to search for (only top level)
+ * @param data the JSON formatted data to search
+ * @returns an object with the parsed values
  */
-export async function readOSUAPI(crn: string): Promise<ClassAvail | number> {
-    // fetch!
-    const responseData: IAPIResponseRaw = await fetch(API_ENDPOINT, {
-        body: encodeURIComponent(`{"key":"crn:${crn}","srcdb":"201902","matched":"crn:${crn}"}`),
-        method: "POST",
-    }).then((res) => res.json());
-    // first check if the class crn is the one we are looking for (just to be safe)
-    if (crn !== responseData.crn) throw new Error("Invalid CRN found!");
-    // next check if the class is closed
-    if (responseData.status.toLowerCase() !== "open") return ClassAvail.CLASS_CLOSED;
-    // next check if the class has open spots
-    const enroll = parseInt(responseData.enrollment, 10);
-    const max = parseInt(responseData.max_enroll, 10);
-    if (enroll < max) return max - enroll;
-    // finally check if there is a waitlist
-    if (parseInt(responseData.waitlist_capacity, 10) > 0) return ClassAvail.WAITLIST_OPEN;
-    return 0;
+function searchJSONForKeys(keys: string[], data: string): any {
+    const ret = {};
+    for (let i = 0, len = keys.length; i < len; i++) {
+        // regular expressions!
+        const match = data.match(`,\\s*"${keys[i]}"\\s*:\\s*"([\\w\\-\\s]*)"\\s*,`);
+        // if its good, copy, if not not so much
+        ret[keys[i]] = match ? match[1] : null;
+    }
+    return ret;
+}
+
+/**
+ * Read the OSU API for a given CRN (class identifier) and returns metadata on the class
+ * @param crn The class identifier
+ * @returns TThe class metadata based on the latest database reading
+ */
+export async function readOSUAPI(crn: string): Promise<IAPIResponse> {
+    // fetch using https!
+    const data: string = await (new Promise((resolve, reject) => {
+        // create the request
+        const req = Https.request(REQUEST_OPS, (res) => {
+            // looking for strings
+            res.setEncoding("utf8");
+            let dataStr = "";
+            // on error, augh!
+            res.on("error", reject);
+            // on data, append it to a string
+            res.on("data", (d) => dataStr += d);
+            // on end, return that value
+            res.on("end", () => resolve(dataStr));
+        });
+        // send our payload
+        req.write(encodeURIComponent(`{"key":"crn:${crn}","srcdb":"201902","matched":"crn:${crn}"}`));
+        // end the request
+        req.end();
+    }) as Promise<string>);
+    // since the fetched string is kinda large, we will manually extract the keys and values we need using regex!
+    const response: IAPIResponseRaw = searchJSONForKeys(RESP_KEYS, data);
+    // convert the response raw into numbers and such for sanitization
+    if (typeof response.crn === "number") response.crn = response.crn.toString();
+    if (typeof response.max_enroll === "string") response.max_enroll = parseInt(response.max_enroll, 10);
+    if (typeof response.enrollment === "string") response.enrollment = parseInt(response.enrollment, 10);
+    if (typeof response.waitlist_capacity === "string") response.waitlist_capacity = parseInt(response.waitlist_capacity, 10);
+    // check if the class crn is the one we are looking for (just to be safe)
+    if (crn !== response.crn) throw new Error("Invalid CRN found!");
+    // send it away!
+    return response as IAPIResponse;
 }
