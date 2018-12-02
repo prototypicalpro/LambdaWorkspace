@@ -9,6 +9,7 @@
 import * as AWS from "aws-sdk";
 import { Context, ScheduledHandler, ScheduledEvent } from "aws-lambda";
 import { FunctionConfiguration } from "aws-sdk/clients/lambda";
+import { readOSUAPI, ClassAvail } from "./ReadOSUAPI";
 
 /** the key in process.env to pay atention to */
 const ENV_KEYS = ["classData", "eventName", "phone"];
@@ -106,14 +107,43 @@ function sendText(phoneNumber: string, message: string): Promise<{}> {
  */
 export const pokeClassDetect: ScheduledHandler = async (event: ScheduledEvent, ctx: Context): Promise<any> => {
   // decode our CRNs to check
-  const crnData = decodeCRNs(process.env.classData);
+  let crnData = decodeCRNs(process.env.classData);
+  const crnStartLen = crnData.length;
   // if it's an emptey array, stop trigger and return.
-  if (crnData.length === 0) return disableTrigger();
+  if (crnData.length === 0) {
+    console.log("No crnData");
+    return disableTrigger();
+  }
   const promiseRay: Array<Promise<any>> = [];
   // start trigger if we are triggered by anything else but the scheduled event
   if (event["detail-type"] !== "Scheduled Event") promiseRay.push(enableTrigger());
   // fetch the API, check it, and if there's a spot text the number and delete the CRN element
-  promiseRay.concat(crnData.map((d) => fetch()))
-
+  const crnPromise = Promise.all(crnData.map((d) => readOSUAPI(d.crn).then((status: number) => {
+    // if the class is anything but full
+    if (status !== 0) {
+      // remove the crn element from our data
+      crnData = crnData.filter((v) => v.crn !== d.crn && v.number !== d.number);
+       // if the class is closed
+      if (status === ClassAvail.CLASS_CLOSED) return sendText(d.number, `Class with CRN ${d.crn} has closed. Sorry about that!`);
+      // if the class has a waitlist
+      if (status === ClassAvail.WAITLIST_OPEN) return sendText(d.number, `Class with CRN ${d.crn} has a waitlist size > 0!`);
+      // else the class has spots open
+      return sendText(d.number, `Class with CRN ${d.crn} has ${status} spots open! Go get em!`);
+    }
+    // if the class isn't any of those, nothing to do
+  }))).then(() => {
+    // if the length has changed
+    if (crnData.length !== crnStartLen) {
+      const ray = [];
+      // store the change
+      ray.push(updateEnv({ classData : encodeCRNs(crnData) }, ctx.invokedFunctionArn));
+      // if we're out of data, stop triggering the function
+      if (crnData.length === 0) ray.push(disableTrigger());
+      // done!
+      return Promise.all(ray);
+    }
+    // else we don't need to update
+  });
+  promiseRay.push(crnPromise);
   return Promise.all(promiseRay);
 };

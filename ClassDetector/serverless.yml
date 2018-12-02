@@ -14,8 +14,8 @@ resources:
       Type: AWS::Events::Rule
       Properties:
         Name: ${self:custom.eventName}
-        ScheduleExpression: rate(1 minute)
-        State: DISABLED
+        ScheduleExpression: rate(1 hour)
+        State: ENABLED
         Targets:
           - Arn:
               Fn::GetAtt:
@@ -65,7 +65,7 @@ functions:
     # simple and fast storage
     environment:
       # fill this in with the encoded CRN data
-      classData: ""
+      classData: "33267,+15038470181"
       phone: ${file(secrets.yml):my_phone}
       eventName: TriggerClassEvent-${opt:stage, self:provider.stage}
     handler: handler.pokeClassDetect

@@ -7,7 +7,7 @@ import fetch from "node-fetch";
 /** the API endpoint to use for the classes */
 const API_ENDPOINT = "https://classes.oregonstate.edu/api/?page=fose&route=details";
 
-const enum ClassAvail {
+export const enum ClassAvail {
     WAITLIST_OPEN = -1,
     CLASS_CLOSED = -2,
 }
