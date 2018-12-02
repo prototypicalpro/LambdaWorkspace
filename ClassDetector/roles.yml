@@ -1,4 +1,4 @@
-# Define the role for our function, allowing it to self-modify it's configuration and disable it's own events
+# Define the role for our function, allowing it to self-modify it's configuration and disable it's own events, as well as send SNS
 PokeClassDetect:
   Type: AWS::IAM::Role
   Properties:
@@ -13,7 +13,7 @@ PokeClassDetect:
               - lambda.amazonaws.com
           Action: sts:AssumeRole
     Policies:
-      - PolicyName: EnvWriteEventWrite
+      - PolicyName: EnvWriteEventWriteSNSWrite
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -63,3 +63,12 @@ PokeClassDetect:
                     - Ref: AWS::Region
                     - Ref: AWS::AccountId
                     - "rule/${self:custom.eventName}"
+            # allow sending of AWS SMS only (stolen from https://stackoverflow.com/questions/38871201/authorization-when-sending-a-text-message-using-amazonsnsclient)
+            - Effect: "Deny"
+              Action:
+                - sns:Publish
+              Resource: "arn:aws:sns:*:*:*"
+            - Effect: "Allow"
+              Action:
+                - sns:Publish
+              Resource: "*"

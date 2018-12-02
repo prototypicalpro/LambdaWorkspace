@@ -64,6 +64,8 @@ functions:
     # self modifying enviroment varibles
     # simple and fast storage
     environment:
-      number: 0
+      # fill this in with the encoded CRN data
+      classData: ""
+      phone: ${file(secrets.yml):my_phone}
       eventName: TriggerClassEvent-${opt:stage, self:provider.stage}
     handler: handler.pokeClassDetect
