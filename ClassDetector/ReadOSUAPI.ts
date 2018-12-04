@@ -66,21 +66,13 @@ export async function readOSUAPI(crn: string): Promise<IAPIResponse> {
         // create the request
         const req = Https.request(REQUEST_OPS, (res) => {
             // looking for strings
-            const dataRay: Array<{ buffer: Buffer, offset: number }> = [];
-            let offset = 0;
+            const dataRay: Buffer[] = [];
             // on error, augh!
             res.on("error", reject);
-            // on data, append it to a string
-            res.on("data", (d: Buffer) => {
-                dataRay.push({ buffer: d, offset });
-                offset += d.length;
-            });
+            // on data, append it to a buffer array
+            res.on("data", (d: Buffer) => dataRay.push(d));
             // on end, return that value
-            res.on("end", () => {
-                const retBuffer = new Buffer(offset);
-                for (let i = 0, len = dataRay.length; i < len; i++) dataRay[i].buffer.copy(retBuffer, dataRay[i].offset);
-                resolve(retBuffer.toString());
-            });
+            res.on("end", () => resolve(Buffer.concat(dataRay).toString()));
         });
         // send our payload
         req.write(encodeURIComponent(`{"key":"crn:${crn}","srcdb":"201902","matched":"crn:${crn}"}`));
