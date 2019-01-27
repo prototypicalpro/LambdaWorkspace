@@ -7,7 +7,7 @@ import { GraphQLClient } from "graphql-request";
  * @param name The name of the repository, as it appears in the URL
  * @param owner The owner of the respository, as they appear in the URL
  */
-const OTHER_REPOS: Array<{alias: string, name: string, owner: string}> = [{alias: "ftc_app", name: "7776-ftc_app", owner: "Scott3-0"}, {alias: "PedDetect", owner: "AutonomousCarProject", name: "PedestrianDetection"}];
+const OTHER_REPOS: Array<{alias: string, name: string, owner: string}> = [{alias: "PedDetect", owner: "AutonomousCarProject", name: "PedestrianDetection"}];
 
 /** My github user ID (not display name), found by manually querying the github API */
 const USER_ID = "MDQ6VXNlcjg3MzEwMTM=";
@@ -23,7 +23,7 @@ const USER_NAME = "db-dropDatabase";
  * Also queries each repository in the {@link OTHER_REPOS} varible for the
  * with the same idea, counting my commits.
  */
-const QUERY = `{
+const QUERY = `query {
   user(login: "${USER_NAME}") {
     repositories(first: 100) {
       nodes {
@@ -102,7 +102,7 @@ const GITHUB = "https://api.github.com/graphql";
  */
 const gqlClient = new GraphQLClient(GITHUB, {
   headers: {
-    authorization: `Bearer ${process.env.github_token}`,
+    authorization: `bearer ${process.env.github_token}`,
   },
 });
 
@@ -137,8 +137,8 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
     const nodes = data.user.repositories.nodes.concat(OTHER_REPOS.map((o) => data[o.alias]));
     const ownedByMeLen = data.user.repositories.nodes.length;
     for (let i = 0, len = nodes.length; i < len; i++) {
-      // if the # of commits is above zero (aparently I have some repositories I've never contributed to?)
-      if (nodes[i].defaultBranchRef.target.history.totalCount > 0) {
+      // if the repo isn't private and the # of commits is above zero (aparently I have some repositories I've never contributed to?)
+      if (nodes[i].defaultBranchRef && nodes[i].defaultBranchRef.target.history.totalCount > 0) {
         // populate the better json output
         ret.totalCommitsByMe += nodes[i].defaultBranchRef.target.history.totalCount;
         ret.repositories.push({
@@ -153,7 +153,8 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
     return ret;
   } catch (e) {
     // nothing good, guess we'll spit out an error // I'm writing this because my code might actually work!
-    console.error(`Error! ${e.toString()}`);
+    console.error(`Error! ${e.stack}`);
+    console.error(JSON.stringify(data));
     return false;
   }
 }
