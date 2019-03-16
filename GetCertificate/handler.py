@@ -91,11 +91,14 @@ def get_cert_impl(event, context, root):
         cert=cert.to_cryptography().public_bytes(Encoding.PEM).decode("utf-8").replace("\n", "\\n")
     ) for d, cert in valid_out]
     # format the final output and return it
+    inval_str = ""
+    if len(invalid_out) > 0:
+        inval_str = "\"" + "\", \"".join(invalid_out) + "\""
     return {
         "statusCode": 200,
         "body": CERT_OUT_FMT.format(
             dom_val=', '.join(valid_out_str),
-            dom_inval="\"" + "\", \"".join(invalid_out) + "\""
+            dom_inval=inval_str
         )
     }
 
@@ -124,12 +127,18 @@ def get_header(event, context):
         False, 
         get_param(event, "guard_name", GUARD_NAME), 
         domains=domains))
+    inval_str = ""
+    if len(out_invalid) > 0:
+        inval_str = "\"" + "\", \"".join(out_invalid) + "\""
+    valid_str = ""
+    if len(out_dom) > 0:
+        valid_str = "\"" + "\", \"".join(out_dom) + "\""
     # return some JSON!
     return {
         "statusCode": 200,
         "body": HEAD_OUT_FMT.format(
             head=header,
-            dom_inval="\"" + "\", \"".join(out_invalid) + "\"",
-            dom_val="\"" + "\", \"".join(out_dom) + "\""
+            dom_inval=inval_str,
+            dom_val=valid_str
         )
     }
