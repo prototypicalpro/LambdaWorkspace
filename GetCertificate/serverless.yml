@@ -54,6 +54,7 @@ functions:
       - http:
           path: /getrootcert
           method: get
+          cors: true
   # get the certificate for a list of domains
   getCert:
     handler: handler.get_cert
@@ -61,6 +62,7 @@ functions:
       - http:
           path: /getcert
           method: get
+          cors: true
   # get the BearSSL formatted header file of trust anchors for some domains
   getHeader:
     handler: handler.get_header
@@ -68,3 +70,4 @@ functions:
       - http:
           path: /getheader
           method: get
+          cors: true

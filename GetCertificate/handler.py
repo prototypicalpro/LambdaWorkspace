@@ -18,6 +18,9 @@ Q_STR_KEY = "multiValueQueryStringParameters"
 # error response, we can do any debugging in the lambda console
 ERROR = {
     "statusCode": 500,
+    "headers": {
+        "Access-Control-Allow-Origin": "*",
+    },
     "body": "{\"message\":\"Could not proccess your request.\"}" 
 }
 
@@ -96,6 +99,9 @@ def get_cert_impl(event, context, root):
         inval_str = "\"" + "\", \"".join(invalid_out) + "\""
     return {
         "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+        },
         "body": CERT_OUT_FMT.format(
             dom_val=', '.join(valid_out_str),
             dom_inval=inval_str
@@ -136,6 +142,9 @@ def get_header(event, context):
     # return some JSON!
     return {
         "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+        },
         "body": HEAD_OUT_FMT.format(
             head=header,
             dom_inval=inval_str,
