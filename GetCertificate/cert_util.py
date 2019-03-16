@@ -136,7 +136,7 @@ def parse_root_certificate_store(store):
     # convert the raw PEM files into x509 object
     return [crypto.load_certificate(crypto.FILETYPE_PEM, pem) for pem in certStore]
 
-def get_server_root_cert(address, port, certDict):
+def get_server_root_cert(address, port, certDict, root=True):
     """Attempt to retrieve the the root certificate in the full SSL cert chain 
     from the provided server address & port. The certDict parameter should
     contain a dictionary of { certificate.get_subject().hash() md5 hash : certificate }, 
@@ -156,7 +156,10 @@ def get_server_root_cert(address, port, certDict):
     ssl_soc.connect((address, port))
     try:
         ssl_soc.do_handshake()
-        cert = ssl_soc.get_peer_cert_chain()[-1]
+        if root is True:
+            cert = ssl_soc.get_peer_cert_chain()[-1]
+        else:
+            cert = ssl_soc.get_peer_cert_chain()[0]
     finally:
         ssl_soc.shutdown()
         soc.close()
@@ -164,6 +167,9 @@ def get_server_root_cert(address, port, certDict):
     if cert == None:
         print("Failed to fetch certificate on domain: " + address)
         return None
+    # if we don't want the root cert, return the regular cert
+    if root is False:
+        return cert
     cn_hash = cert.get_issuer().hash()
     # if there is a respective certificate, return it
     # else print an error and return None

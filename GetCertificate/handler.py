@@ -25,7 +25,7 @@ ERROR = {
 CERT_DICT = dict([(cert.get_subject().hash(), cert) for cert in cert_util.parse_root_certificate_store(open(certifi.where(), "r"))])
 
 # template for each valid domain item in the JSON output
-VAL_CERT_FMT = """{{"domain":"{dom}","label":"{label}","root_cert":"{cert}"}}"""
+VAL_CERT_FMT = """{{"domain":"{dom}","label":"{label}","cert":"{cert}"}}"""
 
 # template the final formatted output
 CERT_OUT_FMT = """{{"valid_domains":[{dom_val}],"invalid_domains":[{dom_inval}]}}"""
@@ -35,6 +35,8 @@ HEAD_OUT_FMT = """{{"header":{head},"valid_domains":[{dom_val}],"invalid_domains
 CERT_LENGTH_NAME = "TAs_NUM"
 # Defualt name for the cert array varible
 CERT_ARRAY_NAME = "TAs"
+# Default header guard name
+GUARD_NAME = "CERTIFICATES"
 
 def validate_domain(dom_str):
     """ Validate a domain string """
@@ -45,7 +47,16 @@ def validate_domain(dom_str):
     # check against regex
     return DOM_VAL_PAT.match(dom_str) is not None
 
-def validate_and_get_certs(domains):
+def get_param(event, key, default):
+    if "queryStringParameters" not in event or key not in event["queryStringParameters"]:
+        return default
+    param = event["queryStringParameters"][key]
+    # saftey check! no injection here
+    if len(param) > 512:
+        return default
+    return param
+
+def validate_and_get_certs(domains, root):
     # iterate through the domains, fetching the certificates for each one
     out_invalid = []
     out_valid = []
@@ -56,7 +67,7 @@ def validate_and_get_certs(domains):
             continue
         # else fetch the certificate
         try:
-            out_valid.append((d, cert_util.get_server_root_cert(d, 443, CERT_DICT)))
+            out_valid.append((d, cert_util.get_server_root_cert(d, 443, CERT_DICT, root=root)))
         except:
             # if there's an error, mark as invalid and continue
             print("Error!")
@@ -65,14 +76,14 @@ def validate_and_get_certs(domains):
     # return
     return (out_invalid, out_valid)
 
-def get_cert(event, context):
+def get_cert_impl(event, context, root):
     # check that the input object is formatted correctly
     if event is None or Q_STR_KEY not in event or "domain" not in event[Q_STR_KEY]:
         return ERROR
     # extract domains from the event object
     domains = event[Q_STR_KEY]["domain"]
     # iterate through the domains, fetching the certificates for each one
-    invalid_out, valid_out = validate_and_get_certs(domains)
+    invalid_out, valid_out = validate_and_get_certs(domains, root)
     # format the certificate into a string, and add it to the valid array
     valid_out_str = [VAL_CERT_FMT.format(
         dom=d,
@@ -88,6 +99,12 @@ def get_cert(event, context):
         )
     }
 
+def get_root(event, context):
+    return get_cert_impl(event, context, True)
+
+def get_cert(event, context):
+    return get_cert_impl(event, context, False)
+
 def get_header(event, context):
     # check that the input object is formatted correctly
     if event is None or Q_STR_KEY not in event or "domain" not in event[Q_STR_KEY]:
@@ -95,12 +112,18 @@ def get_header(event, context):
     # extract domains from the event object
     domains = event[Q_STR_KEY]["domain"]
     # iterate through the domains, fetching the certificates for each one
-    out_invalid, out_valid_tuple = validate_and_get_certs(domains)
+    out_invalid, out_valid_tuple = validate_and_get_certs(domains, True)
     # split the packed tuple for the function
     out_dom = [ d for d, cert in out_valid_tuple ]
     out_cert = [ cert for d, cert in out_valid_tuple ]
-    # create the header from the certs, escaping all the weird stuff
-    header = json.dumps(cert_util.x509_to_header(out_cert, CERT_ARRAY_NAME, CERT_LENGTH_NAME, False, "TRUST_ANCHOR", domains=domains))
+    # create the header from the certs and some url parameters, escaping all the weird stuff
+    header = json.dumps(cert_util.x509_to_header(
+        out_cert, 
+        get_param(event, "array_name", CERT_ARRAY_NAME), 
+        get_param(event, "length_name", CERT_LENGTH_NAME),
+        False, 
+        get_param(event, "guard_name", GUARD_NAME), 
+        domains=domains))
     # return some JSON!
     return {
         "statusCode": 200,
