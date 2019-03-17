@@ -118,21 +118,23 @@ def get_header(event, context):
     # check that the input object is formatted correctly
     if event is None or Q_STR_KEY not in event or "domain" not in event[Q_STR_KEY]:
         return ERROR
-    # extract domains from the event object
-    domains = event[Q_STR_KEY]["domain"]
+    # extract domains from the event object, and deduplicate
+    domains = list(set(event[Q_STR_KEY]["domain"]))
     # iterate through the domains, fetching the certificates for each one
     out_invalid, out_valid_tuple = validate_and_get_certs(domains, True)
     # split the packed tuple for the function
     out_dom = [ d for d, cert in out_valid_tuple ]
     out_cert = [ cert for d, cert in out_valid_tuple ]
     # create the header from the certs and some url parameters, escaping all the weird stuff
-    header = json.dumps(cert_util.x509_to_header(
-        out_cert, 
-        get_param(event, "array_name", CERT_ARRAY_NAME), 
-        get_param(event, "length_name", CERT_LENGTH_NAME),
-        False, 
-        get_param(event, "guard_name", GUARD_NAME), 
-        domains=domains))
+    header = "\"\""
+    if len(out_cert) > 0:
+        header = json.dumps(cert_util.x509_to_header(
+            out_cert, 
+            get_param(event, "array_name", CERT_ARRAY_NAME), 
+            get_param(event, "length_name", CERT_LENGTH_NAME),
+            False, 
+            get_param(event, "guard_name", GUARD_NAME), 
+            domains=domains))
     inval_str = ""
     if len(out_invalid) > 0:
         inval_str = "\"" + "\", \"".join(out_invalid) + "\""

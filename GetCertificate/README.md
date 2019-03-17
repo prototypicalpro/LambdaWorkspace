@@ -73,7 +73,7 @@ Similar to `getcert` and `getrootcert`, data is returned as a JSON document:
 }
 ```
 Note some components in this data:
-* `header` - The header file containing an array of BearSSL trust anchors, as a giant string. Once the escaped characters are converted, it should look something like [this file](./sample_headers/cert.h). It be noted that this header file will not necessarily have a trust anchor for each domain, as `getheader` will automatically remove duplicated root certificates.
+* `header` - The header file containing an array of BearSSL trust anchors, as a giant string. Once the escaped characters are converted, it should look something like [this file](./sample_headers/cert.h). It be noted that this header file will not necessarily have a trust anchor for each domain, as `getheader` will automatically remove duplicated root certificates. Will be `""` if no valid domains are supplied.
 * `valid_domains` - A list of domain strings whose certificates were included in the header file.
 * `invalid_domains` - A list of domain strings that certificates could not be retrieved from.
 
