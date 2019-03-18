@@ -44,12 +44,18 @@ provider:
   runtime: python3.7
   region: us-west-2
   memorySize: 128
-  timeout: 5
+  timeout: 8
+  # Environment Variables
+  environment:
+    # API key for the google safe browsing API
+    google_api_key: ${file(./secrets.yml):google_api_key}
+
 
 functions:
   # get the root certificate for a list of domains
   getRootCert:
     handler: handler.get_root
+    reservedConcurrency: 5 
     events:
       - http:
           path: /getrootcert
@@ -58,6 +64,7 @@ functions:
   # get the certificate for a list of domains
   getCert:
     handler: handler.get_cert
+    reservedConcurrency: 5 
     events:
       - http:
           path: /getcert
@@ -66,6 +73,7 @@ functions:
   # get the BearSSL formatted header file of trust anchors for some domains
   getHeader:
     handler: handler.get_header
+    reservedConcurrency: 5 
     events:
       - http:
           path: /getheader

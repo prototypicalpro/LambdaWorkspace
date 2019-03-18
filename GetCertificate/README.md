@@ -4,8 +4,8 @@
 
 This API was created to solve two problems:
 1. The [BearSSL library](https://bearssl.org/) requires the user generate a static list of values from trusted root certificates. These values are used to verify the integrity of the server's certificate during the SSL handshake. I originally wanted to create a website that would take a list of domains, fetch the x509 certificates from them, and format the certificates into an array of trust anchors. However...
-1. [There is no way to get a x509 certificate using browser Javascript.](https://stackoverflow.com/questions/2604399/is-there-a-way-to-get-ssl-certificate-details-using-javascript) Even if there was a way to get a certificate from a website...
-1. [There is no way to access the root certificate store from Javascript either.](https://stackoverflow.com/questions/21004645/where-is-nodes-certificate-store) This makes is very difficult to match a website certificate to a trusted root certificate.
+1. [There is no way to get a x509 certificate using browser JavaScript.](https://stackoverflow.com/questions/2604399/is-there-a-way-to-get-ssl-certificate-details-using-javascript) Even if there was a way to get a certificate from a website...
+1. [There is no way to access the root certificate store from JavaScript either.](https://stackoverflow.com/questions/21004645/where-is-nodes-certificate-store) This makes is very difficult to match a website certificate to a trusted root certificate.
 
 To solve these problems, I have created a Web API hosted on AWS instead, based off of the python script I wrote [here](https://github.com/OPEnSLab-OSU/SSLClient/tree/master/tools/pycert_bearssl). This API has three endpoints, https://certutil.prototypical.pro/getheader, https://certutil.prototypical.pro/getcert, and https://certutil.prototypical.pro/getrootcert, which solve problem 1, 2, and 3 respectively. These APIs are free and open to everyone (please be nice). 
 
