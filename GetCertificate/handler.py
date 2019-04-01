@@ -63,7 +63,7 @@ def validate_and_get_certs(domains, root):
 
 def get_cert_impl(event, context, root):
     # check that the input object is formatted correctly
-    if event is None or Q_STR_KEY not in event or "domain" not in event[Q_STR_KEY]:
+    if event is None or Q_STR_KEY not in event or event[Q_STR_KEY] is None or "domain" not in event[Q_STR_KEY]:
         return ERROR
     # extract domains from the event object
     domains = event[Q_STR_KEY]["domain"]
@@ -100,7 +100,7 @@ def get_cert(event, context):
 
 def get_header(event, context):
     # check that the input object is formatted correctly
-    if event is None or Q_STR_KEY not in event or "domain" not in event[Q_STR_KEY]:
+    if event is None or Q_STR_KEY not in event or event[Q_STR_KEY] is None or "domain" not in event[Q_STR_KEY]:
         return ERROR
     # extract domains from the event object, and deduplicate
     domains = list(set(event[Q_STR_KEY]["domain"]))
