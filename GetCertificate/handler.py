@@ -1,3 +1,4 @@
+import sys
 import json
 import certifi
 import cert_util
@@ -57,7 +58,7 @@ def validate_and_get_certs(domains, root):
             # if there's an error, mark as invalid and continue
             print("Error!")
             print(sys.exc_info()[0])
-            out_invalid.append(d)
+            invalid_dom.append(d)
     # return
     return (invalid_dom, out_valid)
 
