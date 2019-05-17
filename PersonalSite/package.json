@@ -8,22 +8,22 @@
   },
   "dependencies": {
     "aws": "0.0.3-2",
-    "aws-sdk": "^2.395.0",
+    "aws-sdk": "^2.457.0",
     "graphql-request": "^1.8.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.17",
-    "@types/bluebird": "^3.5.25",
-    "@types/node": "^8.10.39",
-    "serverless": "^1.36.3",
+    "@types/aws-lambda": "^8.10.25",
+    "@types/bluebird": "^3.5.26",
+    "@types/node": "^8.10.48",
+    "serverless": "^1.42.3",
     "serverless-domain-manager": "^2.6.13",
     "serverless-offline": "^3.33.0",
-    "serverless-webpack": "^5.2.0",
-    "source-map-support": "^0.5.10",
+    "serverless-webpack": "^5.3.0",
+    "source-map-support": "^0.5.12",
     "ts-loader": "^4.2.0",
-    "tslint": "^5.12.1",
+    "tslint": "^5.16.0",
     "typescript": "^2.9.2",
-    "webpack": "^4.29.0"
+    "webpack": "^4.31.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT"
