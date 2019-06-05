@@ -67,6 +67,7 @@ functions:
           path: githubcount
           # conditionally validate API key based on stage (see custom)
           private: ${self:custom.isProd.${opt:stage, self:provider.stage}}
+          cors: true
   # the un-exposed IoT updating part
   pokeGithubCount:
     role: GithubPokeRole
