@@ -1,5 +1,6 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+const webpack = require('webpack');
 
 const entries = {};
 
@@ -21,10 +22,11 @@ module.exports = {
   },
   target: 'node',
   module: {
+    noParse: /iconv-loader\.js/,
     rules: [
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
       { test: /\.tsx?$/, loader: 'ts-loader' },
     ],
   },
-  externals: ['aws-sdk']
+  externals: ['aws-sdk'],
 };
