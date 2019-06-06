@@ -7,22 +7,21 @@
     "debug": "node --inspect ./node_modules/.bin/serverless offline -s dev"
   },
   "dependencies": {
-    "aws": "0.0.3-2",
     "aws-sdk": "^2.469.0",
     "graphql-request": "^1.8.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.26",
     "@types/bluebird": "^3.5.27",
-    "@types/node": "^8.10.49",
+    "@types/node": "^12.0.5",
     "serverless": "^1.44.1",
-    "serverless-domain-manager": "^2.6.13",
-    "serverless-offline": "^3.33.0",
+    "serverless-domain-manager": "^3.2.2",
+    "serverless-offline": "^5.0.1",
     "serverless-webpack": "^5.3.0",
     "source-map-support": "^0.5.12",
-    "ts-loader": "^4.2.0",
+    "ts-loader": "^6.0.2",
     "tslint": "^5.17.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.5.1",
     "webpack": "^4.33.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
