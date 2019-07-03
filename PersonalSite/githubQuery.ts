@@ -152,7 +152,7 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
     // fire away!
     return ret;
   } catch (e) {
-    // nothing good, guess we'll spit out an error // I'm writing this because my code might actually work!
+    // nothing good, guess we'll spit out an error
     console.error(`Error! ${e.stack}`);
     console.error(JSON.stringify(data));
     return false;

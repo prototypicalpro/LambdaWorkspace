@@ -77,7 +77,7 @@ functions:
       github_token: ${file(secrets.yml):github_token}
     events:
       - schedule: 
-          rate: rate(5 minutes)
+          rate: rate(6 hours)
           enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}
       #- http:
       #    method: get
