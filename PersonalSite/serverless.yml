@@ -20,7 +20,7 @@ resources:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   region: us-west-2
   memorySize: 128
   timeout: 3
@@ -77,9 +77,10 @@ functions:
       github_token: ${file(secrets.yml):github_token}
     events:
       - schedule: 
-          rate: rate(6 hours)
+          rate: rate(5 minutes)
           enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}
-      #- http:
+      # for testing only
+      # - http:
       #    method: get
       #    path: githubpoke
       #    # conditionally validate API key based on stage (see custom)
