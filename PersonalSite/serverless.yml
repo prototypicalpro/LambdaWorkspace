@@ -23,7 +23,7 @@ provider:
   runtime: nodejs10.x
   region: us-west-2
   memorySize: 128
-  timeout: 3
+  timeout: 5
   # and while we're at it, lets tell the function what the bucket name is
   environment:
     bucketName: githubjsonbucket
