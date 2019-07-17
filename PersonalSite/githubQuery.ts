@@ -94,7 +94,7 @@ const IGNORE_USERS: string[] = ["MDQ6VXNlcjI4NzIyNzYw"];
 const USER_ID = "MDQ6VXNlcjg3MzEwMTM=";
 
 /** My github user name */
-const USER_NAME = "db-dropDatabase";
+const USER_NAME = "prototypicalpro";
 
 /** The estimated number of hours I spend for each commit, excluding ones close together */
 const HOURS_PER_COMMIT = 4; // I've spent anywhere from entire days to a few minutes, but this seems like a reasonable comprimise
