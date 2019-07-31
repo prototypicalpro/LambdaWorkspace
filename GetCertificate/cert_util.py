@@ -154,6 +154,7 @@ def get_server_root_cert(address, port, certDict, root=True):
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ssl_soc = SSL.Connection(ctx, soc)
     ssl_soc.connect((address, port))
+    ssl_soc.set_tlsext_host_name(bytes(address, "utf8"))
     try:
         ssl_soc.do_handshake()
         if root is True:
@@ -182,7 +183,7 @@ def bytes_to_c_data(mah_bytes, length=None):
     """Converts a byte array to a CSV C array data format, with endlines!
         e.g: 0x12, 0xA4, etc.
         mah_bytes is the bytearray, and length is the number of bytes to
-        generate in the array, and indent is how much to indent the output
+        generate in the array
     """
     ret = []
     # create an array of byte strings, including an endline every 10 or so bytes
