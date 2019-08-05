@@ -71,7 +71,7 @@ Similar to `getcert` and `getrootcert`, data is returned as a JSON document:
     "www.amazon.com"
   ],
   "invalid_domains": [
-    "bad.domain"
+    "bad..domain"
   ]
 }
 ```
