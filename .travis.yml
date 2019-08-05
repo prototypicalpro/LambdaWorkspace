@@ -1,21 +1,22 @@
 matrix:
   include:
   - language: python
-    python: 3.6
+    python: 3.7
     env: PROJECT=getcertificate
     before_script: 
     - nvm install 10
     - npm install -g serverless
     - yarn
     - pip install pipenv
-  - language: nodejs
+  - language: node_js
     nodejs: 10
     env: PROJECT=classdetector
     before_script: npm install -g serverless
-  - language: nodejs
+  - language: node_js
     nodejs: 10
     env: PROJECT=personalsite
     before_script: npm install -g serverless
+dist: bionic
 cache: yarn
 script:
 - cd $PROJECT && pwd 
