@@ -48,7 +48,7 @@ provider:
   # Environment Variables
   environment:
     # API key for the google safe browsing API
-    google_api_key: ${file(./secrets.yml):google_api_key}
+    google_api_key: ${file(./secrets.yml):google_api_key, ${env:GOOGLE_API_KEY}}
 
 
 functions:

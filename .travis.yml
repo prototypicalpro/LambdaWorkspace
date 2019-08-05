@@ -6,7 +6,9 @@ env:
   - PROJECT=classdetector
   - PROJECT=getcertificate
   - PROJECT=personalsite
-before_script: npm install -g serverless
+before_script: 
+ - npm install -g serverless
+ - pip install pipenv
 script:
   - cd $PROJECT && pwd 
   - serverless package --stage=prod
