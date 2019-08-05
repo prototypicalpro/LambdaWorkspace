@@ -28,15 +28,6 @@ provider:
   environment:
     bucketName: githubjsonbucket
     fileName: apicache.json
-  # single API key and single rate limit
-  # if you're reading this, please don't spam my API :(
-  apiKeys:
-    # this will be in the source of my website anyway, so there's no point in obfuscating it
-    - superSecurePlaintextAPIKey-${opt:stage, self:provider.stage}
-  usagePlan:
-    throttle:
-      burstLimit: 20 # I'm not that famous, right?
-      rateLimit: 30 # Thirty per second is worrying, but it probably won't bankrupt me
 
 custom:
   # conditionally enable features based on stage
@@ -65,8 +56,6 @@ functions:
       - http:
           method: get
           path: githubcount
-          # conditionally validate API key based on stage (see custom)
-          private: ${self:custom.isProd.${opt:stage, self:provider.stage}}
           cors: true
   # the un-exposed IoT updating part
   pokeGithubCount:

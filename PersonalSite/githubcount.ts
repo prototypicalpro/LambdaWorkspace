@@ -22,14 +22,14 @@ export const githubcount: Handler = async () => {
   if (!data) return {
       body: "stuff is broken, please come back later!",
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://prototypical.pro",
       },
       statusCode: 500,
     };
   else return {
       body: JSON.stringify(data),
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://prototypical.pro",
       },
       statusCode: 200,
     };

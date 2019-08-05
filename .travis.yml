@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "10"
+cache: yarn
+matrix:
+  env:
+    - PROJECT=ClassDetector
+    - PROJECT=GetCertificate
+    - PROJECT=PersonalSite
+before_script: cd $PROJECT
+script: if .travis/project-has-new-commits.sh $TRAVIS_COMMIT_RANGE $PROJECT; then cd $PROJECT && serverless package --stage=prod; else echo "NO CHANGES SINCE LAST COMMIT"; fi
+branches:
+  only:
+    - master
+    - /^greenkeeper.*$/
