@@ -9,10 +9,5 @@ if [[ -z $2 ]]; then
   echo "No project directory supplied, stopping build"
   exit 1
 fi
-
-if [[ ! -d $2 ]]; then
-  echo "Project directory does not exist, stopping build"
-  exit 1
-fi
-
+echo git diff --name-only $1 | grep $2
 git diff --name-only $1 | grep $2
