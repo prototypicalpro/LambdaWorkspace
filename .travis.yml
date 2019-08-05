@@ -1,18 +1,26 @@
-language: node_js
-node_js:
-  - "10"
+matrix:
+  include:
+  - language: python
+    python: 3.6
+    env: PROJECT=getcertificate
+    before_script: 
+    - nvm install 10
+    - npm install -g serverless
+    - yarn
+    - pip install pipenv
+  - language: nodejs
+    nodejs: 10
+    env: PROJECT=classdetector
+    before_script: npm install -g serverless
+  - language: nodejs
+    nodejs: 10
+    env: PROJECT=personalsite
+    before_script: npm install -g serverless
 cache: yarn
-env:
-  - PROJECT=classdetector
-  - PROJECT=getcertificate
-  - PROJECT=personalsite
-before_script: 
- - npm install -g serverless
- - pip install pipenv
 script:
-  - cd $PROJECT && pwd 
-  - serverless package --stage=prod
+- cd $PROJECT && pwd 
+- serverless package --stage=prod
 branches:
   only:
-    - master
-    - /^greenkeeper.*$/
+  - master
+  - /^greenkeeper.*$/
