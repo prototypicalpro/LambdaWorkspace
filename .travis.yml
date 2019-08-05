@@ -25,3 +25,6 @@ branches:
   only:
   - master
   - /^greenkeeper.*$/
+deploy:
+  provider: script
+  script: if ../.travis/project-has-new-commits.sh $TRAVIS_COMMIT_RANGE $PROJECT; then serverless deploy --stage=prod; else echo "NO CHANGES SINCE LAST COMMIT"; fi
