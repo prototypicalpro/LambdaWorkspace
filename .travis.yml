@@ -25,3 +25,5 @@ deploy:
   provider: script
   skip_cleanup: true
   script: if ../.travis/project-has-new-commits.sh $TRAVIS_COMMIT_RANGE $PROJECT; then serverless deploy --stage=prod; else echo "NO CHANGES SINCE LAST COMMIT"; fi
+  on:
+    branch: master

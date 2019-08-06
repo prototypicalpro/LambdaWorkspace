@@ -64,7 +64,7 @@ functions:
     handler: githubpoke.githubpoke  
     # function specific secrets
     environment:
-      github_token: ${file(secrets.yml):github_token}
+      github_token: ${file(secrets.yml):github_token, ${env:GITHUB_TOKEN}}
     events:
       - schedule: 
           rate: rate(12 hours)
