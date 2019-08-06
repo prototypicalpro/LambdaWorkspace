@@ -52,7 +52,7 @@ functions:
   getGithubCount:
     handler: githubcount.githubcount
     role: GithubCountRole
-    reservedConcurrency: 5
+    reservedConcurrency: 4
     events:
       - http:
           method: get
