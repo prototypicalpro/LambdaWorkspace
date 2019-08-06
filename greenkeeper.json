@@ -1,0 +1,13 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "classdetector/package.json",
+        "getcertificate/package.json",
+        "package.json",
+        "personalsite/package.json",
+        "template/package.json"
+      ]
+    }
+  }
+}

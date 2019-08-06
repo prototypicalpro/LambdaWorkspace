@@ -11,7 +11,7 @@
     "graphql-request": "^1.8.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.31",
+    "@types/aws-lambda": "8.10.31",
     "@types/bluebird": "^3.5.27",
     "@types/node": "^12.6.9",
     "serverless": "^1.49.0",
