@@ -873,10 +873,10 @@ atob@^2.1.1:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.177.0, aws-sdk@^2.496.0:
-  version "2.504.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.504.0.tgz#d7111b3f5117548935d68c717d72bbf57a9362f9"
-  integrity sha512-azOX54oovJv0zWzO23fBgIprwsvx8KUuMR+cAUAOx23D8LJ5S+sl3UYS9Q1X4qF/blBTa4+ZNawZDV0N1HiQmw==
+aws-sdk@^2.490.0:
+  version "2.505.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.505.0.tgz#53c5bd451ead1f55b9b275aa1432c9202534705b"
+  integrity sha512-VSPSUl1xt0K+YAjNGbrNOOJ/q6X9GBIeg+vzxBBy4oX9SkZitKVuvIB6uc4fio9XQkYKvCdl8V/vMsQWyIvVgw==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -888,10 +888,10 @@ aws-sdk@^2.177.0, aws-sdk@^2.496.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws-sdk@^2.490.0:
-  version "2.505.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.505.0.tgz#53c5bd451ead1f55b9b275aa1432c9202534705b"
-  integrity sha512-VSPSUl1xt0K+YAjNGbrNOOJ/q6X9GBIeg+vzxBBy4oX9SkZitKVuvIB6uc4fio9XQkYKvCdl8V/vMsQWyIvVgw==
+aws-sdk@^2.496.0:
+  version "2.504.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.504.0.tgz#d7111b3f5117548935d68c717d72bbf57a9362f9"
+  integrity sha512-azOX54oovJv0zWzO23fBgIprwsvx8KUuMR+cAUAOx23D8LJ5S+sl3UYS9Q1X4qF/blBTa4+ZNawZDV0N1HiQmw==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -4974,12 +4974,12 @@ serve-static@1.14.1:
     parseurl "~1.3.3"
     send "0.17.1"
 
-serverless-domain-manager@~3.2.6:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/serverless-domain-manager/-/serverless-domain-manager-3.2.6.tgz#c5ea619cd0a95bd3ecbc1e4b8f8c8a1b975cbc83"
-  integrity sha512-Y7tMN+yvI9+LUVZ5mjYc4bNDFenw5aYyDFR/KCQNHUbIqFiEw+AFzLVYGRrUqLJTjCllCqBwQ//uDvwtT+w57A==
+serverless-domain-manager@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/serverless-domain-manager/-/serverless-domain-manager-3.3.0.tgz#758b928f5a146b3e925e5cd9d6e0043879805eee"
+  integrity sha512-oGZDNzI/Y15QusC/E+Zm6VaXoAwnbQnm6e6wyXPFDi1Sqoeo8xarKNj0fZODhEf4DKggAqxVfkiXjhuC8yZu0Q==
   dependencies:
-    aws-sdk "^2.177.0"
+    aws-sdk "^2.490.0"
     chalk "^2.4.1"
 
 serverless-offline@~5.10.1:
