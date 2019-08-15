@@ -1,8 +1,8 @@
 {
-  "name": "template",
+  "name": "getplant",
   "version": "1.0.0",
   "description": "Serverless webpack example using Typescript",
-  "main": "handler.js",
+  "main": "getplant.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

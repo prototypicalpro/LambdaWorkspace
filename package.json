@@ -1,4 +1,10 @@
 {
     "private": true,
-    "workspaces": ["classdetector", "getcertificate", "personalsite", "template"]
-  }
+    "workspaces": [
+        "classdetector",
+        "getcertificate",
+        "personalsite",
+        "getplant",
+        "template"
+    ]
+}
