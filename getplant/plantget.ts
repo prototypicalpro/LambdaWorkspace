@@ -21,11 +21,13 @@ interface IDriveRet {
 
 /** headers to return with this GET request */
 const HEADERS = { "Access-Control-Allow-Origin": "https://howaremyplants.net" };
+/** travis does newlines incorrectly, so I have to fix them here */
+const DRIVE_KEY = process.env.drive_key.replace("\\n", "\n");
 /** The drive authentication client to use */
 const AUTH_CLIENT = new google.auth.JWT(
     process.env.drive_email,
     null,
-    process.env.drive_key,
+    DRIVE_KEY,
     ["https://www.googleapis.com/auth/drive.readonly"]);
 
 /**
