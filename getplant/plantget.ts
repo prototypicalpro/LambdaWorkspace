@@ -37,6 +37,8 @@ const AUTH_CLIENT = new google.auth.JWT(
  */
 export const plantget: Handler = async () => {
     try {
+        console.log(process.env.drive_key);
+        console.log(DRIVE_KEY);
         // query my google drive!
         const res = await google.drive("v3").files.list({
             auth: AUTH_CLIENT,
