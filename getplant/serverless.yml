@@ -38,7 +38,7 @@ functions:
     handler: plantget.plantget
     environment:
       drive_email: ${env:DRIVE_EMAIL, file(secrets.yml):drive_email}
-      drive_key: ${env:DRIVE_KEY, file(secrets.yml):drive_key}
+      drive_key: "${env:DRIVE_KEY, file(secrets.yml):drive_key}"
     events:
       - http:
           method: get
