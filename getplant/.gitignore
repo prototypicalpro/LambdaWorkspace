@@ -1,0 +1,16 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Webpack directories
+.webpack
+
+# IDE settings
+.vscode
+
+# Secrets
+secrets.yml
+getplant_creds.json

@@ -1,0 +1,46 @@
+service:
+  name: Template
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-domain-manager
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: us-west-2
+  memorySize: 128
+  timeout: 3
+
+custom:
+  # conditionally enable features based on stage
+  isProd:
+    dev: false
+    prod: true
+  # exclude the aws-sdk to reduce bundle size
+  webpackIncludeModules:
+    forceExclude:
+      - aws-sdk
+  # custom domain endpoint!
+  customDomain:
+    # only use the custom domain if we are deploying to production
+    enabled: ${self:custom.isProd.${opt:stage, self:provider.stage}}
+    domainName: plants.prototypical.pro
+    certificateName: '*.prototypical.pro'
+    createRoute53Record: true
+    endpointType: 'regional'
+
+functions:
+  # forward facing API to send latest plant photo update
+  PlantGet:
+    handler: plantget.plantget
+    environment:
+      drive_email: ${env:DRIVE_EMAIL, file(secrets.yml):drive_email}
+      drive_key: ${env:DRIVE_KEY, file(secrets.yml):drive_key}
+    events:
+      - http:
+          method: get
+          path: /
+          cors: true
