@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "aws-sdk": "~2.514.0",
+    "aws-sdk": "~2.515.0",
     "googleapis": "~42.0.0"
   },
   "devDependencies": {
