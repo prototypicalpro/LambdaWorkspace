@@ -10,12 +10,7 @@ plugins:
 # lets make a bucket!
 resources:
   Resources:
-    StorageBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:provider.environment.bucketName}
     # pull roles from the external file
-    GithubCountRole: ${file(roles.yml):GithubCount}
     GithubPokeRole: ${file(roles.yml):GithubPoke}
 
 provider:
@@ -24,10 +19,6 @@ provider:
   region: us-west-2
   memorySize: 128
   timeout: 5
-  # and while we're at it, lets tell the function what the bucket name is
-  environment:
-    bucketName: githubjsonbucket
-    fileName: apicache.json
 
 custom:
   # conditionally enable features based on stage
@@ -49,22 +40,28 @@ custom:
 
 functions:
   # the exposed API part
-  getGithubCount:
+  GetGithubCount:
     handler: githubcount.githubcount
-    role: GithubCountRole
-    reservedConcurrency: 5
+    environment:
+      # will be filled by the function below!
+      cache: ""
+    reservedConcurrency: 10
     events:
       - http:
           method: get
           path: githubcount
           cors: true
   # the un-exposed IoT updating part
-  pokeGithubCount:
+  PokeGithubCount:
     role: GithubPokeRole
     handler: githubpoke.githubpoke  
     # function specific secrets
     environment:
       github_token: ${env:GITHUB_TOKEN, file(secrets.yml):github_token}
+      other_arn: 
+        Fn::GetAtt: 
+          - GetGithubCountLambdaFunction
+          - Arn
     events:
       - schedule: 
           rate: rate(12 hours)

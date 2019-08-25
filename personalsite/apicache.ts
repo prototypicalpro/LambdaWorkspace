@@ -4,35 +4,78 @@
 
 import * as AWS from "aws-sdk";
 import { IGithubRet } from "./githubQuery";
+import { FunctionConfiguration } from "aws-sdk/clients/lambda";
 
- /** Generate S3 client */
-const s3 = new AWS.S3();
+/** the compressed structure to use to store the IGithubRet data, since an env var maxes out at 4kb */
+interface IGithubCompressed {
+    /** totalCommitsByMe */
+    tc: number;
+    /** totalHoursByMe */
+    th: number;
+    /**
+     * repositories, contains a tuple for all of the things in {@link IGithubRepoInto}
+     * 0: commitsByMe
+     * 1: estimatedHoursByMe
+     * 2: name
+     * 3: ownedByMe
+     */
+    r: Array<[number, number, string, boolean]>;
+}
 
-/** Generate parameters for the object we're grabbing from s3 */
-const s3ParamsGet: AWS.S3.GetObjectRequest = {
-    Bucket: process.env.bucketName,
-    Key: process.env.fileName,
-    ResponseContentEncoding: "utf8",
-    ResponseContentType: "application/json",
-};
+/** The key in process.env to cache data in */
+const ENV_KEY = "cache";
 
-/** Generate parameters for the object when we're storing it in s3 */
-const s3ParamsPut: AWS.S3.PutObjectRequest = {
-    Bucket: process.env.bucketName,
-    ContentEncoding: "utf8",
-    ContentType: "application/json",
-    Key: process.env.fileName,
-};
+/** the key in process.env to store the ARN of my getgithub function */
+const ARN_KEY = "other_arn";
 
 /** Get the cached file */
-export function getAPICache(): Promise<null | IGithubRet> {
-    // query the s3 API, returning a JSON object if we have a file, and null if we don't
-    // add the catch statement b/c s3 throws permission denied if the file doesn't exist
-    return s3.getObject(s3ParamsGet).promise().then((r) => JSON.parse((r.Body as Buffer).toString("utf8"))).catch(() => null);
+export function getAPICache(): null | IGithubRet {
+    // check if the environment varible exists
+    if (!process.env[ENV_KEY]) return null;
+    // check if it parses to JSON
+    try {
+        const cache: IGithubCompressed = JSON.parse(process.env[ENV_KEY]);
+        // decompress the cache
+        const repositories = cache.r.map((r) => ({
+            commitsByMe: r[0],
+            estimatedHoursByMe: r[1],
+            name: r[2],
+            ownedByMe: r[3],
+        }));
+        // return the decompressed object!
+        return {
+            repositories,
+            totalCommitsByMe: cache.tc,
+            totalHoursByMe: cache.th,
+        };
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
 }
 
 /** Set the cached file */
-export function setAPICache(to: string): Promise<AWS.S3.PutObjectOutput> {
-    // populate the bucket with our stringified data
-    return s3.putObject(Object.assign({ Body: to }, s3ParamsPut)).promise();
+export function setAPICache(to: IGithubRet): Promise<FunctionConfiguration> {
+    // compress IGithubRet to reduce space
+    const reduced: IGithubCompressed = {
+        r: to.repositories.map((b) => [
+            b.commitsByMe,
+            b.estimatedHoursByMe,
+            b.name,
+            b.ownedByMe,
+        ]),
+        tc: to.totalCommitsByMe,
+        th: to.totalHoursByMe,
+    };
+    // make a new env object
+    const Variables = {};
+    Variables[ENV_KEY] = JSON.stringify(reduced);
+    // use the AWS lambda client to set the githubget function environment vars
+    // send it away!
+    return new AWS.Lambda().updateFunctionConfiguration({
+        Environment: {
+            Variables,
+        },
+        FunctionName: process.env[ARN_KEY],
+    }).promise();
 }

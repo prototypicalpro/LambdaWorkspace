@@ -6,7 +6,7 @@
  * to be so awesome.
  */
 
-import { getAPICache, setAPICache } from "./apicache";
+import { setAPICache } from "./apicache";
 import { updateIotCounter } from "./iotpoke";
 import { ScheduledHandler } from "aws-lambda";
 import { IGithubRet, queryGithubAPI } from "./githubQuery";
@@ -18,15 +18,9 @@ import { IGithubRet, queryGithubAPI } from "./githubQuery";
  */
 export const githubpoke: ScheduledHandler = async () => {
     // query the GraphQL API, and fetch our cached data from s3
-    const data = await Promise.all([getAPICache(), queryGithubAPI()]);
-    const s3Data: IGithubRet | false = data[0];
-    const githubData = data[1];
+    const githubData: IGithubRet | false = await queryGithubAPI();
     // if we don't have github data, something is very wrong
     if (!githubData) throw new Error(`Github data returned ${githubData}`);
-    // if we don't have s3 data, or the s3 data is different than the github data
-    if (!s3Data || s3Data.totalCommitsByMe !== githubData.totalCommitsByMe) {
-        // store the fetched data in S3, and update our IoT
-        return Promise.all([setAPICache(JSON.stringify(githubData)), updateIotCounter(githubData.totalCommitsByMe)]).then(() => null);
-    }
-    // else do nothing, as there is nothing to do
+    // else update the function config with our new response
+    return Promise.all([setAPICache(githubData), updateIotCounter(githubData.totalCommitsByMe)]).then(() => null);
 };

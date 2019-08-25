@@ -18,7 +18,7 @@ import { getAPICache } from "./apicache";
  */
 export const githubcount: Handler = async () => {
   // query the GraphQL API, and fetch the raw data
-  const data = await getAPICache();
+  const data = getAPICache();
   if (!data) return {
       body: "stuff is broken, please come back later!",
       headers: {

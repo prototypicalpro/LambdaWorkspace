@@ -55,14 +55,14 @@ type IGithubQueryResponse = IGithubQueryUser & IGithubQueryRepos;
 
 /** interface specifying repository information, to be used below */
 interface IGithubRepoInfo {
-  /** the name of the repository */
-  name: string;
   /** the # of commits that I've made to this repository */
   commitsByMe: number;
-  /** whether or not I own this repository */
-  ownedByMe: boolean;
   /** estimated hours I've spend writing code in this repository (integer) */
   estimatedHoursByMe: number;
+  /** the name of the repository */
+  name: string;
+  /** whether or not I own this repository */
+  ownedByMe: boolean;
 }
 
 /** interface specifying the returned object by the {@link githubcount} API */
