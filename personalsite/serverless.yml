@@ -26,9 +26,12 @@ custom:
     dev: false
     prod: true
   # exclude the aws-sdk to reduce bundle size
-  webpackIncludeModules:
-    forceExclude:
-      - aws-sdk
+  webpack:
+    packager: yarn
+    includeModules:
+      forceExclude:
+        - aws-sdk
+
   # custom domain endpoint!
   customDomain:
     # only use the custom domain if we are deploying to production

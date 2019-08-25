@@ -15,9 +15,11 @@ provider:
 
 custom:
   # exclude the aws-sdk to reduce bundle size
-  webpackIncludeModules:
-    forceExclude:
-      - aws-sdk
+  webpack:
+    packager: yarn
+    includeModules:
+      forceExclude:
+        - aws-sdk
 
 functions:
   pokeClassDetect:
