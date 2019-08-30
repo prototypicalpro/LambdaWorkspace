@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "~8.10.31",
-    "@types/node": "~12.6.2",
+    "@types/node": "~12.7.3",
     "serverless": "~1.51.0",
     "serverless-domain-manager": "~3.3.0",
     "serverless-offline": "~5.7.3",
