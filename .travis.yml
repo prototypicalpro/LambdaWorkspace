@@ -1,15 +1,15 @@
 matrix:
   include:
   - language: python
-    python: 3.7
+    python: 3.8
     env: PROJECT=getcertificate
     before_script: 
-    - nvm install 10
+    - nvm install 12
     - npm install -g serverless
     - yarn
     - pip install pipenv
   - language: node_js
-    nodejs: 10
+    nodejs: 12
     env: PROJECT=personalsite
     before_script: npm install -g serverless
 dist: bionic
