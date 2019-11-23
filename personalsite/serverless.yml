@@ -1,5 +1,4 @@
-service:
-  name: PersonalAPI
+service: PersonalAPI
 
 # Add the serverless-webpack plugin
 plugins:
