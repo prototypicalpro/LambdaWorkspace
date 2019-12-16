@@ -4,7 +4,7 @@
  * Works with Google Drive for image hosting.
  */
 
-import { Context, APIGatewayEvent, Handler } from "aws-lambda";
+import { Handler } from "aws-lambda";
 import { google } from "googleapis";
 
 /** Interface describing the data returned by plantGet */
@@ -21,6 +21,8 @@ interface IDriveRet {
 
 /** headers to return with this GET request */
 const HEADERS = { "Access-Control-Allow-Origin": "https://howaremyplants.net" };
+/** ID of google drive folder that all photos are stored in */
+const DRIVE_FOLDER_ID = "1Ju2J88YGXqSUmXTqrmuF87LncR52SMRw";
 /** travis does newlines incorrectly, so I have to fix them here */
 const DRIVE_KEY = process.env.drive_key.replace(/\\n/g, "\n");
 /** The drive authentication client to use */
@@ -28,14 +30,14 @@ const AUTH_CLIENT = new google.auth.JWT(
     process.env.drive_email,
     null,
     DRIVE_KEY,
-    ["https://www.googleapis.com/auth/drive.readonly"]);
+    [ "https://www.googleapis.com/auth/drive.readonly" ]);
 
 /**
  * The main function handler for this API.
  * Takes no parameters, returns data useful for looking at pictures of plants
  * @returns {@link IGithubRet}
  */
-export const plantget: Handler = async () => {
+export const plantget: Handler<IPlantRet> = async () => {
     try {
         // query my google drive!
         const res = await google.drive("v3").files.list({
@@ -43,7 +45,7 @@ export const plantget: Handler = async () => {
             fields: "files(id,createdTime)",
             orderBy: "createdTime desc",
             pageSize: 1,
-            q: "'1vCnwntNQvA6s24s8kqkhvu-0kzNexSyN' in parents",
+            q: `'${ DRIVE_FOLDER_ID }' in parents`,
         });
         // status check
         if (res.status !== 200)

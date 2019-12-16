@@ -12,6 +12,10 @@ matrix:
     nodejs: 12
     env: PROJECT=personalsite
     before_script: npm install -g serverless
+  - language: node_js
+    nodejs: 12
+    env: PROJECT=getplant
+    before_script: npm install -g serverless
 dist: bionic
 cache: yarn
 script:
