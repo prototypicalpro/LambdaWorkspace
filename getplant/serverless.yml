@@ -12,7 +12,7 @@ provider:
   runtime: nodejs12.x
   region: us-west-2
   memorySize: 128
-  timeout: 3
+  timeout: 5
 
 custom:
   # conditionally enable features based on stage
