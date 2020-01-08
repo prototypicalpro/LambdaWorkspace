@@ -3,7 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es6",
+    "target": "ES2017",
     "outDir": "dist",
     "rootDir": ".",
     "sourceMap": true,

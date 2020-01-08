@@ -1,5 +1,5 @@
 import { AzureFunction, Context } from "@azure/functions";
-import { MongoClient } from "mongodb";
+import { MongoClient, MongoClientOptions } from "mongodb";
 import { Validator } from "jsonschema";
 
 interface IMessage {
@@ -40,24 +40,18 @@ const MessageSchema = {
 };
 
 const MessageValidator = new Validator();
-
 const MONGO_DB = "plantdata";
-const MONGO_URL = `mongodb+srv://${ encodeURIComponent(process.env.MONGO_USER) }:${ encodeURIComponent(process.env.MONGO_PASS) }@${ process.env.MONGO_SERVER }/${ MONGO_DB }?tls=true&retryWrites=true&w=majority`;
-
-let Mongo: MongoClient | null = null;
 
 // connect to MongoDB outside, so the connection is persisted
+let Mongo: MongoClient | null = null;
 async function getMongoClient(): Promise<MongoClient> {
-    if (Mongo === null) {
-        Mongo = new MongoClient(MONGO_URL, {
+    if (Mongo === null || !Mongo.isConnected()) {
+        Mongo = await MongoClient.connect(`mongodb+srv://${ encodeURIComponent(process.env.MONGO_USER) }:${ encodeURIComponent(process.env.MONGO_PASS) }@${ process.env.MONGO_SERVER }?tls=true&retryWrites=true&w=majority&connectTimeoutMS=2500&socketTimeoutMS=2500&compressors=snappy,zlib`, {
             tlsAllowInvalidCertificates: false,
             useNewUrlParser: true,
             useUnifiedTopology: true,
-        } as any);
+        } as MongoClientOptions);
     }
-
-    if (!Mongo.isConnected())
-        await Mongo.connect();
 
     return Mongo;
 }
@@ -85,11 +79,8 @@ const eventHubTrigger: AzureFunction = async (context: Context, eventHubMessages
         const result = await db.collection(MONGO_DB).insertMany(validatedMessages);
     } catch (e) {
         context.log("Got exception: ");
-        context.log(JSON.stringify(e));
+        context.log(e.message);
     }
-
-    if (mongo !== null)
-        return mongo.close();
 };
 
 export default eventHubTrigger;
