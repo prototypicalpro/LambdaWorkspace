@@ -7,7 +7,8 @@
         "package.json",
         "personalsite/package.json",
         "template/package.json",
-        "getplant/package.json"
+        "getplant/package.json",
+        "azureplant/package.json"
       ]
     }
   }

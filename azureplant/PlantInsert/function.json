@@ -1,0 +1,14 @@
+{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "eventHubMessages",
+      "direction": "in",
+      "eventHubName": "iothub-ehub-prototypic-2669270-0ba46cdb09",
+      "connection": "PLANTHUB_CONNECTION",
+      "cardinality": "many",
+      "consumerGroup": "$Default"
+    }
+  ],
+  "scriptFile": "../dist/PlantInsert/index.js"
+}
