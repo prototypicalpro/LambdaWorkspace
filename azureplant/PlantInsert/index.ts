@@ -1,13 +1,13 @@
 import { AzureFunction, Context } from "@azure/functions";
 import { MongoClient, MongoClientOptions } from "mongodb";
-import { Validator } from "jsonschema";
+import { Validator, Schema } from "jsonschema";
 
 interface IMessage {
     time: number;
     data: { [ key: string ]: number };
 }
 
-const MessageSchema = {
+const MessageSchema: Schema = {
     additionalProperties: false,
     properties: {
         data: {
