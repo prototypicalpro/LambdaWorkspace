@@ -14,7 +14,13 @@ const MessageSchema = {
             additionalProperties: false,
             patternProperties: {
                 "^\\w+$": {
-                    type: "number",
+                    additionalProperties: false,
+                    patternProperties: {
+                        "^\\w+$": {
+                            type: "number",
+                        },
+                    },
+                    type: ["number", "object"],
                 },
             },
             type: "object",
