@@ -3,7 +3,10 @@ import { MongoClient, MongoClientOptions } from "mongodb";
 import { Validator, Schema } from "jsonschema";
 
 interface IMessage {
-    time: number;
+    meta: {
+        time: number | Date,
+        name: string,
+    };
     data: { [ key: string ]: number };
 }
 
@@ -75,6 +78,11 @@ const eventHubTrigger: AzureFunction = async (context: Context, eventHubMessages
     if (validatedMessages.length === 0)
         return;
 
+    // replace all unix epoch numbers with real dates
+    for (const msg of validatedMessages) {
+        msg.meta.time = new Date(msg.meta.time as number * 1000);
+    }
+
     // do mongodb stuff
     let mongo: MongoClient | null = null;
     try {
@@ -82,7 +90,7 @@ const eventHubTrigger: AzureFunction = async (context: Context, eventHubMessages
         // get the plant database
         const db = mongo.db(MONGO_DB);
         // insert into the plantdata collection
-        const result = await db.collection(MONGO_DB).insertMany(validatedMessages);
+        await db.collection(MONGO_DB).insertMany(validatedMessages);
     } catch (e) {
         context.log("Got exception: ");
         context.log(e.message);
