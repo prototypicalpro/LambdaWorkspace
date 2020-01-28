@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/aws-lambda": "~8.10.37",
     "@types/bluebird": "~3.5.29",
-    "@types/node": "~13.1.0",
+    "@types/node": "~13.5.1",
     "serverless": "~1.61.2",
     "serverless-domain-manager": "~3.3.0",
     "serverless-offline": "~5.12.1",
