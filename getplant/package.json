@@ -15,7 +15,7 @@
     "@types/node": "~13.9.0",
     "serverless": "~1.67.0",
     "serverless-domain-manager": "~3.3.0",
-    "serverless-offline": "~6.0.0",
+    "serverless-offline": "~6.1.0",
     "serverless-webpack": "~5.3.1",
     "ts-loader": "~6.2.1",
     "tslint": "~5.20.1",
