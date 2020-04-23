@@ -12,14 +12,14 @@
   },
   "description": "",
   "devDependencies": {
-    "@azure/functions": "^1.0.1-beta1",
-    "@types/mongodb": "^3.3.14",
+    "@azure/functions": "^1.2.0",
+    "@types/mongodb": "^3.5.9",
     "npm-run-all": "^4.1.5",
-    "typescript": "^3.3.3"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "jsonschema": "^1.2.5",
-    "mongodb": "^3.4.1",
-    "tslib": "^1.10.0"
+    "jsonschema": "^1.2.6",
+    "mongodb": "^3.5.6",
+    "tslib": "^1.11.1"
   }
 }
