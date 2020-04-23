@@ -10,15 +10,15 @@
     "aws-sdk": "~2.661.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "~8.10.37",
-    "@types/node": "~13.13.0",
-    "serverless-offline": "~6.1.2",
+    "@types/aws-lambda": "~8.10.50",
+    "@types/node": "~13.13.2",
+    "serverless-offline": "~6.1.4",
     "serverless": "~1.68.0",
     "serverless-webpack": "~5.3.1",
-    "source-map-support": "~0.5.16",
-    "ts-loader": "~6.2.1",
-    "tslint": "~5.20.1",
-    "typescript": "~3.7.3",
+    "source-map-support": "~0.5.18",
+    "ts-loader": "~7.0.1",
+    "tslint": "~6.1.1",
+    "typescript": "~3.8.3",
     "webpack": "~4.43.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
