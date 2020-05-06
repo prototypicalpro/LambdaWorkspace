@@ -33,6 +33,7 @@ custom:
     certificateName: '*.prototypical.pro'
     createRoute53Record: true
     endpointType: 'regional'
+    securityPolicy: tls_1_2
 
 functions:
   # forward facing API to send latest plant photo update
