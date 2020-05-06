@@ -15,7 +15,7 @@
     "@types/bluebird": "~3.5.30",
     "@types/node": "~13.13.2",
     "serverless": "~1.69.0",
-    "serverless-domain-manager": "~3.3.2",
+    "serverless-domain-manager": "~4.0.0",
     "serverless-offline": "~6.1.4",
     "serverless-webpack": "~5.3.1",
     "source-map-support": "~0.5.18",
