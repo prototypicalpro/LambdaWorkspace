@@ -1,5 +1,5 @@
 # Lambda Workspace
-[![Build Status](https://travis-ci.org/prototypicalpro/LambdaWorkspace.svg?branch=master)](https://travis-ci.org/prototypicalpro/LambdaWorkspace) [![Greenkeeper badge](https://badges.greenkeeper.io/prototypicalpro/LambdaWorkspace.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/prototypicalpro/LambdaWorkspace.svg?branch=master)](https://travis-ci.org/prototypicalpro/LambdaWorkspace) [![Greenkeeper badge](https://badges.greenkeeper.io/prototypicalpro/LambdaWorkspace.svg)](https://greenkeeper.io/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/prototypicalpro/LambdaWorkspace.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/prototypicalpro/LambdaWorkspace/context:javascript)
 
 A repository of my projects using AWS lambda.
  * `getcertificate`: A public API to fetch a certificate chain from a website, and convert it into a format used by [BearSSL](https://bearssl.org).
