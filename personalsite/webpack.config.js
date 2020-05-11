@@ -1,6 +1,5 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
-const webpack = require('webpack');
 
 const entries = {};
 

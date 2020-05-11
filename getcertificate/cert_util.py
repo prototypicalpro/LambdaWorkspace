@@ -18,7 +18,6 @@ from OpenSSL import SSL, crypto
 import socket
 import textwrap
 import math
-import os
 
 CERT_PATTERN = re.compile("^\-\-\-\-\-BEGIN CERTIFICATE\-\-\-\-\-[a-z,A-Z,0-9,\n,\/,+]+={0,2}\n\-\-\-\-\-END CERTIFICATE-\-\-\-\-", re.MULTILINE)
 
@@ -164,7 +163,7 @@ def get_server_root_cert(address, port, certDict, root=True):
         ssl_soc.shutdown()
         soc.close()
     # match the certificate in the chain to the respective root certificate using the common name
-    if cert == None:
+    if cert is None:
         print("Failed to fetch certificate on domain: " + address)
         return None
     # if we don't want the root cert, return the regular cert
@@ -235,11 +234,7 @@ def x509_to_header(x509Certs, cert_var, cert_length_var, keep_dupes, guard_name,
     for the header guard (preferable all caps). Keep_dupes is a boolean to indicate if duplicate 
     certificates should be left intact (true) or removed (false).
     """
-    cert_description = ''
     certs = x509Certs
-    # Save cert data as a C style header.
-    # start by building each component
-    cert_data = ""
     # hold an array of static array strings (TA_RSA_N)
     static_arrays = list()
     # same with CA entries

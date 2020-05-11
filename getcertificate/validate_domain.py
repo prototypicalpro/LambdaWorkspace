@@ -67,7 +67,7 @@ def validate_domains(dom_str_list):
         databytes = res.read()
         print(databytes)
         data = json.loads(databytes)
-    except:
+    except Exception:
         # if there's an error, return error
         print("Error!")
         print(sys.exc_info()[0])

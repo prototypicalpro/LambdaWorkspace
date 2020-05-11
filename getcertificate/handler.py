@@ -54,7 +54,7 @@ def validate_and_get_certs(domains, root):
     for d in valid_dom:
         try:
             out_valid.append((d, cert_util.get_server_root_cert(d, 443, CERT_DICT, root=root)))
-        except:
+        except Exception:
             # if there's an error, mark as invalid and continue
             print("Error!")
             print(sys.exc_info()[0])
