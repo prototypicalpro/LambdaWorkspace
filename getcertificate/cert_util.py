@@ -19,7 +19,7 @@ import socket
 import textwrap
 import math
 
-CERT_PATTERN = re.compile("^\-\-\-\-\-BEGIN CERTIFICATE\-\-\-\-\-[a-z,A-Z,0-9,\n,\/,+]+={0,2}\n\-\-\-\-\-END CERTIFICATE-\-\-\-\-", re.MULTILINE)
+CERT_PATTERN = re.compile("^\-\-\-\-\-BEGIN CERTIFICATE\-\-\-\-\-[a-zA-Z0-9\n\/+]+={0,2}\n\-\-\-\-\-END CERTIFICATE-\-\-\-\-", re.MULTILINE)
 
 # Default name prefixes for varibles used in the hearder autogeneration
 # Autogenerator will follow these names with a number
