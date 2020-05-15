@@ -9,14 +9,13 @@ matrix:
     - yarn
     - pip install pipenv
   - language: node_js
-    nodejs: 12
+    node_js: 12
     env: PROJECT=personalsite
     before_script: npm install -g serverless
   - language: node_js
-    nodejs: 12
+    node_js: 12
     env: PROJECT=getplant
     before_script: npm install -g serverless
-dist: bionic
 cache: yarn
 script:
 - cd $PROJECT && pwd 
