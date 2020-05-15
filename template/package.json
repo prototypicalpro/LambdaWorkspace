@@ -13,7 +13,7 @@
     "@types/aws-lambda": "~8.10.50",
     "@types/node": "~14.0.1",
     "serverless-offline": "~6.1.4",
-    "serverless": "~1.70.0",
+    "serverless": "~1.71.0",
     "serverless-webpack": "~5.3.1",
     "source-map-support": "~0.5.18",
     "ts-loader": "~7.0.1",
