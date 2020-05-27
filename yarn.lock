@@ -6231,10 +6231,10 @@ serverless-domain-manager@~4.1.0:
     aws-sdk "^2.490.0"
     chalk "^2.4.1"
 
-serverless-offline@~6.1.2, serverless-offline@~6.1.5:
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-6.1.5.tgz#50544e96737e0a325ba0d68e96733ed119f28532"
-  integrity sha512-Shm2/oEaH0Bg2qztTjiiEX//BoQxYpj+/CPqzmVVBYKbatVrUbYDHx2H3ka4bfzwIeDrcsCK/oUGcWrIAjPM1g==
+serverless-offline@~6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-6.2.0.tgz#2932ffe9770077d6212ae80327f3a8f559c6c025"
+  integrity sha512-Z+t3+0Pj+Cgnmcpa/Xbx5Crfzo41wJ2G4Q9wO6k2aWtsfynaeQCRtZR7sThu980QCZ4XEHEnVL3QNX5grH54zQ==
   dependencies:
     "@hapi/boom" "^7.4.11"
     "@hapi/h2o2" "^8.3.2"
@@ -6243,6 +6243,7 @@ serverless-offline@~6.1.2, serverless-offline@~6.1.5:
     chalk "^3.0.0"
     cuid "^2.1.8"
     execa "^4.0.0"
+    extend "^3.0.2"
     fs-extra "^8.1.0"
     js-string-escape "^1.0.1"
     jsonpath-plus "^3.0.0"
