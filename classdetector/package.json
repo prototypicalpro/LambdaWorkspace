@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "aws-sdk": "~2.686.0"
+    "aws-sdk": "~2.687.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "~8.10.31",
