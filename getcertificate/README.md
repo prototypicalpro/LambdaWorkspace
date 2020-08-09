@@ -95,3 +95,5 @@ This API uses the pyOpenSSL code from the [Adafruit Pycert Tool](https://learn.a
 ## Questions?
 
 Feel free to contact me at my [email](mailto:noah@koontzs.com) if you have any questions about this API.
+
+![Pixel Tracker](https://track.prototypical.pro?source=github&repo=LambdaWorkspace&project=getcertificate)

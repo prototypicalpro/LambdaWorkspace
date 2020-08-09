@@ -7,3 +7,5 @@ A repository of my projects using AWS lambda.
  * `classdetector`: An automatic notification service for OSU classes without a waitlist.
  * `template`: A template Serverless project, which the projects above are based on.
  * `azureplant`: An Azure function which loads data from Azure IoT into a MongoDB, used in conjuntion with my [Azure Sphere Plant Monitor](https://github.com/prototypicalpro/AzureSpherePlantMonitor). 
+
+![Pixel Tracker](https://track.prototypical.pro?source=github&repo=LambdaWorkspace)
