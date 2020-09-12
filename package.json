@@ -4,10 +4,6 @@
         "classdetector",
         "getcertificate",
         "personalsite",
-        "getplant",
         "template"
-    ],
-    "resolutions": {
-        "debug": ">=2.6.9"
-    }
+    ]
 }
