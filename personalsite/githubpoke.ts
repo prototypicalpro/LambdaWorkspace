@@ -22,5 +22,5 @@ export const githubpoke: ScheduledHandler = async () => {
     // if we don't have github data, something is very wrong
     if (!githubData) throw new Error(`Github data returned ${githubData}`);
     // else update the function config with our new response
-    return Promise.all([setAPICache(githubData), updateIotCounter(githubData.totalCommitsByMe)]).then(() => null);
+    return Promise.all([setAPICache(githubData), updateIotCounter(githubData.totalCommitsByMe)]).then(() => {});
 };

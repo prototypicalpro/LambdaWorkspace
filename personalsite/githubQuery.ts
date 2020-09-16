@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import axios from "axios";
 
 /** interface describing the commit data we will recieve from github */
 interface IQueryCommitDate {
@@ -12,6 +12,8 @@ interface IQueryRepository {
   owner: {
     /** github ID string of the owner */
     id: string;
+    /** The login of the owner */
+    login: string;
   };
   defaultBranchRef: {
     target: {
@@ -149,6 +151,7 @@ const QUERY = `query {
         name
         owner {
           id
+          login
         }
         defaultBranchRef {
           target {
@@ -177,11 +180,13 @@ const QUERY = `query {
  * Stores the token in the authorization header as well as setting the endpoint.
  * Note: requires a github oauth token in process.env.github_token to use graphQL.
  */
-const gqlClient = new GraphQLClient(GITHUB, {
+const gqlClient = axios.create({
+  baseURL: GITHUB,
+  method: "post",
   headers: {
     authorization: `bearer ${process.env.github_token}`,
-  },
-});
+  }
+})
 
 function countHoursFromTimestamps(input: IQueryCommitDate[]): number {
   // transform the array of nested timestamps into a flat array of dates
@@ -215,14 +220,15 @@ function countHoursFromTimestamps(input: IQueryCommitDate[]): number {
  */
 export async function queryGithubAPI(): Promise<IGithubRet | false> {
   // query the GraphQL API, and fetch the raw data
-  const data: IGithubQueryResponse = await gqlClient.request(QUERY) as IGithubQueryResponse;
+  const rawData = await gqlClient.request({ data: { query: QUERY } });
+  const data: IGithubQueryResponse = rawData.data.data;
   // since the data is heavily nested, it is kinda complicated to check every key and see if it exists
   // so instead we wrap the whole shebang in a try/catch and throw a single error for any failure
   const ret: IGithubRet = { repositories: [], totalCommitsByMe: 0, totalHoursByMe: 0 };
   try {
     // get the array of repositories from both the user section of the query and the specified section of the query
     const nodes = data.user.repositories.nodes.concat(OTHER_REPOS.map((o) => data[o.alias]));
-    let toPagnate: Array<{ cursor: string, alias: string, data: IGithubRepoInfo }> = [];
+    let toPagnate: Array<{ cursor: string, alias: string, data: IGithubRepoInfo, owner: string }> = [];
     for (let i = 0, len = nodes.length; i < len; i++) {
       // if the repo isn't private and the # of commits is above zero (aparently I have some repositories I've never contributed to?)
       // and the repo isn't owned by someone I've blacklisted
@@ -247,6 +253,7 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
           alias: `repo${i.toString()}`,
           cursor: nodes[i].defaultBranchRef.target.history.pageInfo.endCursor,
           data: repOut,
+          owner: nodes[i].owner.login,
         });
         // else add the repo to the ready batch
         else {
@@ -261,10 +268,11 @@ export async function queryGithubAPI(): Promise<IGithubRet | false> {
       // also supply the cursor
       const nextPageQuery = `query {
         ${toPagnate
-        .map((p) => makeRepoQuery(p.data.name, USER_NAME, p.alias, p.cursor))
+        .map((p) => makeRepoQuery(p.data.name, p.owner, p.alias, p.cursor))
         .join("\n")}
       }`;
-      const pageData = await gqlClient.request(nextPageQuery) as IGithubQueryResponse;
+      const pageDataRaw = await gqlClient.request({ data: { query: nextPageQuery } });
+      const pageData: IGithubQueryResponse = pageDataRaw.data.data;
       const nextPagnate: typeof toPagnate = [];
       // for every item, add the additional hours accumulated and see if we need to pagnate again
       for (let i = 0, len = toPagnate.length; i < len; i++) {
