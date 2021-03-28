@@ -4,7 +4,7 @@
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
       "direction": "in",
-      "eventHubName": "iothub-ehub-prototypic-2669270-0ba46cdb09",
+      "eventHubName": "iothub-ehub-plantmonit-9308295-0d64d51cf1",
       "connection": "PLANTHUB_CONNECTION",
       "cardinality": "many",
       "consumerGroup": "$Default"
