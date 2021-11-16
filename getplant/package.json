@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "googleapis": "~64.0.0",
-    "aws-sdk": "~2.788.0"
+    "aws-sdk": "~2.814.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "~8.10.64",

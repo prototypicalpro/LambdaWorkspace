@@ -7,7 +7,7 @@
     "debug": "node --inspect ./node_modules/.bin/serverless offline -s dev"
   },
   "dependencies": {
-    "aws-sdk": "~2.788.0",
+    "aws-sdk": "~2.814.0",
     "axios": "^0.21.0"
   },
   "devDependencies": {
